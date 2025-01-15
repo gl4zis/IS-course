@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import ru.itmo.is.entity.User;
 
+
 @Getter
 @Setter
 public class RegisterRequest extends LoginRequest {

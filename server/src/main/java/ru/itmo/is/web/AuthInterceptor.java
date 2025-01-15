@@ -9,7 +9,7 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import ru.itmo.is.entity.User;
 import ru.itmo.is.security.RolesAllowed;
-import ru.itmo.is.security.Unauthorized;
+import ru.itmo.is.security.Anonymous;
 import ru.itmo.is.security.JwtManager;
 import ru.itmo.is.security.SecurityContext;
 import ru.itmo.is.utils.AnnotationUtils;
@@ -47,8 +47,8 @@ public class AuthInterceptor implements HandlerInterceptor {
 
     private boolean allowed(Object handler, @Nullable User.Role authenticatedRole) {
         if (handler instanceof HandlerMethod handlerMethod) {
-            Unauthorized unauthAccess = AnnotationUtils.getEndpointAnnotation(handlerMethod, Unauthorized.class);
-            if (unauthAccess != null && authenticatedRole == null) {
+            Anonymous anonymous = AnnotationUtils.getEndpointAnnotation(handlerMethod, Anonymous.class);
+            if (anonymous != null && authenticatedRole == null) {
                 return true;
             }
 

@@ -2,6 +2,7 @@ package ru.itmo.is.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.itmo.is.dto.request.LoginRequest;
@@ -10,7 +11,7 @@ import ru.itmo.is.dto.request.RegisterRequest;
 import ru.itmo.is.dto.response.JwtResponse;
 import ru.itmo.is.entity.User;
 import ru.itmo.is.security.RolesAllowed;
-import ru.itmo.is.security.Unauthorized;
+import ru.itmo.is.security.Anonymous;
 import ru.itmo.is.service.AuthService;
 
 @RestController
@@ -19,26 +20,26 @@ import ru.itmo.is.service.AuthService;
 public class AuthController {
     private final AuthService authService;
 
-    @Unauthorized
+    @Anonymous
     @PostMapping("/register")
-    public JwtResponse register(RegisterRequest req) {
+    public JwtResponse register(@RequestBody RegisterRequest req) {
         return authService.register(req);
     }
 
-    @Unauthorized
+    @Anonymous
     @PostMapping("/login")
-    public JwtResponse login(LoginRequest req) {
+    public JwtResponse login(@RequestBody LoginRequest req) {
         return authService.login(req);
     }
 
     @RolesAllowed({User.Role.MANAGER})
     @PostMapping("/register-other")
-    public void registerOther(RegisterRequest req) {
+    public void registerOther(@RequestBody RegisterRequest req) {
         authService.registerOther(req);
     }
 
     @PostMapping("/change-pass")
-    public void changePassword(PasswordChangeRequest req) {
+    public void changePassword(@RequestBody PasswordChangeRequest req) {
         authService.changePassword(req);
     }
 }

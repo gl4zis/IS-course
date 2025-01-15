@@ -1,6 +1,5 @@
 package ru.itmo.is.service;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.itmo.is.dto.request.LoginRequest;
@@ -16,6 +15,8 @@ import ru.itmo.is.repository.UserRepository;
 import ru.itmo.is.security.JwtManager;
 import ru.itmo.is.security.PasswordManager;
 import ru.itmo.is.security.SecurityContext;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -34,15 +35,12 @@ public class AuthService {
     }
 
     public JwtResponse login(LoginRequest req) {
-        try {
-            User user = userRepository.getReferenceById(req.getLogin());
-            if (PasswordManager.matches(req.getPassword(), user.getPassword())) {
-                return new JwtResponse(jwtManager.createToken(user), user.getRole());
-            }
+        Optional<User> userO = userRepository.findById(req.getLogin());
+        if (userO.isEmpty() || !PasswordManager.matches(req.getPassword(), userO.get().getPassword())) {
             throw new UnauthorizedException("Invalid credentials");
-        } catch (EntityNotFoundException e) {
-            throw new UnauthorizedException("Invalid credentials");
+
         }
+        return new JwtResponse(jwtManager.createToken(userO.get()), userO.get().getRole());
     }
 
     public void registerOther(RegisterRequest req) {
@@ -50,7 +48,11 @@ public class AuthService {
     }
 
     public void changePassword(PasswordChangeRequest req) {
-        User user = userRepository.getReferenceById(securityContext.getUsername());
+        Optional<User> userO = userRepository.findById(securityContext.getUsername());
+        if (userO.isEmpty()) {
+            throw new UnauthorizedException("Invalid auth token");
+        }
+        User user = userO.get();
         if (!PasswordManager.matches(req.getOldPassword(), user.getPassword())) {
             throw new BadRequestException("Invalid old password");
         }
@@ -66,7 +68,7 @@ public class AuthService {
     }
 
     private JwtResponse saveAndGetToken(User user) {
-        if (isLoginBusy(user.getLogin())) {
+        if (userRepository.existsByLogin(user.getLogin())) {
             throw new ConflictException("User already exists");
         }
         userRepository.save(user);
@@ -75,14 +77,5 @@ public class AuthService {
 
     private boolean isManagerExists() {
         return userRepository.countByRole(User.Role.MANAGER) > 0;
-    }
-
-    private boolean isLoginBusy(String login) {
-        try {
-            userRepository.getReferenceById(login);
-            return false;
-        } catch (EntityNotFoundException e) {
-            return true;
-        }
     }
 }

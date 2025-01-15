@@ -1,10 +1,13 @@
 package ru.itmo.is.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
-@Data
+@Table(name = "usr")
+@Getter
+@Setter
 public class User {
     @Id
     private String login;
@@ -13,7 +16,6 @@ public class User {
     private String surname;
     @Enumerated(EnumType.STRING)
     private Role role;
-
 
     public enum Role {
         NON_RESIDENT,
