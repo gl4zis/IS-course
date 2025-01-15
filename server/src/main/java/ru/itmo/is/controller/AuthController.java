@@ -9,7 +9,7 @@ import ru.itmo.is.dto.request.LoginRequest;
 import ru.itmo.is.dto.request.PasswordChangeRequest;
 import ru.itmo.is.dto.request.RegisterRequest;
 import ru.itmo.is.dto.response.JwtResponse;
-import ru.itmo.is.entity.User;
+import ru.itmo.is.entity.user.User;
 import ru.itmo.is.security.RolesAllowed;
 import ru.itmo.is.security.Anonymous;
 import ru.itmo.is.service.AuthService;

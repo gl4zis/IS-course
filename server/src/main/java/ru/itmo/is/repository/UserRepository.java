@@ -2,7 +2,7 @@ package ru.itmo.is.repository;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
-import ru.itmo.is.entity.User;
+import ru.itmo.is.entity.user.User;
 
 @Repository
 public interface UserRepository extends CrudRepository<User, String> {

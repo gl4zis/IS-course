@@ -6,7 +6,7 @@ import ru.itmo.is.dto.request.LoginRequest;
 import ru.itmo.is.dto.request.PasswordChangeRequest;
 import ru.itmo.is.dto.request.RegisterRequest;
 import ru.itmo.is.dto.response.JwtResponse;
-import ru.itmo.is.entity.User;
+import ru.itmo.is.entity.user.User;
 import ru.itmo.is.exception.BadRequestException;
 import ru.itmo.is.exception.ConflictException;
 import ru.itmo.is.exception.UnauthorizedException;

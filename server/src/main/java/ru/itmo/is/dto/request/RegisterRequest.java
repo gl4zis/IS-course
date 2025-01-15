@@ -3,7 +3,7 @@ package ru.itmo.is.dto.request;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
-import ru.itmo.is.entity.User;
+import ru.itmo.is.entity.user.User;
 
 
 @Getter

@@ -1,6 +1,6 @@
 package ru.itmo.is.security;
 
-import ru.itmo.is.entity.User;
+import ru.itmo.is.entity.user.User;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

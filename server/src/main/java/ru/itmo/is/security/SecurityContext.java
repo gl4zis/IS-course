@@ -4,7 +4,7 @@ import lombok.Data;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
-import ru.itmo.is.entity.User;
+import ru.itmo.is.entity.user.User;
 
 import static org.springframework.web.context.WebApplicationContext.SCOPE_REQUEST;
 

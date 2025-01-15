@@ -5,7 +5,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.Named;
 import ru.itmo.is.dto.request.RegisterRequest;
-import ru.itmo.is.entity.User;
+import ru.itmo.is.entity.user.User;
 import ru.itmo.is.security.PasswordManager;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
