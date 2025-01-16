@@ -10,6 +10,11 @@ import java.time.LocalDate;
 @Getter
 @Setter
 public class DepartureBid extends Bid {
+
+    public DepartureBid() {
+        this.setType(Type.DEPARTURE);
+    }
+
     private LocalDate dayFrom;
     private LocalDate dayTo;
 }

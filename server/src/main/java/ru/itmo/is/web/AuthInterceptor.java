@@ -27,7 +27,6 @@ public class AuthInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         String authHeader = request.getHeader("Authorization");
-
         if (authHeader != null && authHeader.startsWith(AUTH_PREFIX)) {
             String token = authHeader.substring(AUTH_PREFIX.length());
 
@@ -37,10 +36,10 @@ public class AuthInterceptor implements HandlerInterceptor {
 
                 securityContext.setContext(username, role);
             } catch (Exception e) {
-                securityContext.setUnauthorized();
+                securityContext.setAnonymous();
             }
         } else {
-            securityContext.setUnauthorized();
+            securityContext.setAnonymous();
         }
         return allowed(handler, securityContext.getRole());
     }

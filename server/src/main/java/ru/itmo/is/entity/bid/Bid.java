@@ -1,10 +1,16 @@
 package ru.itmo.is.entity.bid;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import ru.itmo.is.entity.Event;
 import ru.itmo.is.entity.user.User;
 
+import java.util.List;
+
 @Entity
+@Getter
+@Setter
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Bid {
     @Id
@@ -13,17 +19,19 @@ public class Bid {
     @Enumerated(EnumType.STRING)
     private Type type;
     @Enumerated(EnumType.STRING)
-    private Status status;
+    private Status status = Status.IN_PROCESS;
     private String text;
     @ManyToOne
     @JoinColumn(name = "sender")
     private User sender;
     @ManyToOne
-    @JoinColumn(name = "accepter")
-    private User accepter;
+    @JoinColumn(name = "manager")
+    private User manager;
     @OneToOne
     @JoinColumn(name = "event_id", referencedColumnName = "id")
     private Event event;
+    @OneToMany(mappedBy = "bid")
+    private List<BidFile> files;
 
     public enum Type {
         OCCUPATION,
@@ -33,7 +41,6 @@ public class Bid {
     }
 
     public enum Status {
-        CREATED,
         IN_PROCESS,
         ACCEPTED,
         DENIED

@@ -9,5 +9,5 @@ import java.io.Serializable;
 @Embeddable
 public class NotificationKey implements Serializable {
     private Long bidId;
-    private String accepter;
+    private String receiver;
 }

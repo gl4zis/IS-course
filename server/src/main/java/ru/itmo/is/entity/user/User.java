@@ -23,8 +23,8 @@ public class User {
 
     @OneToMany(mappedBy = "sender", fetch = FetchType.LAZY)
     private List<Bid> sendBids;
-    @OneToMany(mappedBy = "accepter", fetch = FetchType.LAZY)
-    private List<Bid> acceptedBids;
+    @OneToMany(mappedBy = "manager", fetch = FetchType.LAZY)
+    private List<Bid> managedBids;
 
     public enum Role {
         NON_RESIDENT,

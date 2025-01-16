@@ -17,16 +17,16 @@ public class Notification {
     @JoinColumn(name = "bid_id")
     private Bid bid;
     @ManyToOne
-    @MapsId("accepter")
-    @JoinColumn(name = "accepter")
-    private User accepter;
+    @MapsId("receiver")
+    @JoinColumn(name = "receiver")
+    private User receiver;
 
     private String text;
     @Enumerated(EnumType.STRING)
-    private Status status;
+    private Status status = Status.CREATED;
 
     public enum Status {
-        ACCEPTED,
+        CREATED,
         SENT
     }
 }

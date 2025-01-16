@@ -1,5 +1,6 @@
 package ru.itmo.is.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,24 +23,24 @@ public class AuthController {
 
     @Anonymous
     @PostMapping("/register")
-    public JwtResponse register(@RequestBody RegisterRequest req) {
+    public JwtResponse register(@RequestBody @Valid RegisterRequest req) {
         return authService.register(req);
     }
 
     @Anonymous
     @PostMapping("/login")
-    public JwtResponse login(@RequestBody LoginRequest req) {
+    public JwtResponse login(@RequestBody @Valid LoginRequest req) {
         return authService.login(req);
     }
 
     @RolesAllowed({User.Role.MANAGER})
     @PostMapping("/register-other")
-    public void registerOther(@RequestBody RegisterRequest req) {
+    public void registerOther(@RequestBody @Valid RegisterRequest req) {
         authService.registerOther(req);
     }
 
     @PostMapping("/change-pass")
-    public void changePassword(@RequestBody PasswordChangeRequest req) {
+    public void changePassword(@RequestBody @Valid PasswordChangeRequest req) {
         authService.changePassword(req);
     }
 }

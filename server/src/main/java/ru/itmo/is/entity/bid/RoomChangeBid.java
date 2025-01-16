@@ -9,6 +9,11 @@ import ru.itmo.is.entity.dorm.Room;
 @Getter
 @Setter
 public class RoomChangeBid extends Bid {
+
+    public RoomChangeBid() {
+        this.setType(Type.ROOM_CHANGE);
+    }
+
     @ManyToOne
     @JoinColumn(name = "room_to_id")
     private Room roomTo;

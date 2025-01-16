@@ -17,7 +17,7 @@ public class Event {
     private Long id;
     @Enumerated(EnumType.STRING)
     private Type type;
-    private LocalDateTime timestamp;
+    private LocalDateTime timestamp = LocalDateTime.now();
     @ManyToOne
     @JoinColumn(name = "room_id")
     private Room room;
@@ -27,7 +27,8 @@ public class Event {
 
     public enum Type {
         PAYMENT,
-        IN_OUT,
+        IN,
+        OUT,
         OCCUPATION,
         EVICTION,
         ROOM_CHANGE
