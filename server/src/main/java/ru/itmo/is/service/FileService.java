@@ -30,8 +30,8 @@ public class FileService {
         bidFileRepository.save(bidFile);
     }
 
-    public FileResponse get(String key) {
-        Optional<BidFile> bidFileO = bidFileRepository.findById(key);
+    public FileResponse get(String filename) {
+        Optional<BidFile> bidFileO = bidFileRepository.findById(filename);
         if (bidFileO.isEmpty()) {
             throw new NotFoundException("No file with such key");
         }
@@ -39,8 +39,8 @@ public class FileService {
         return fileStorage.get(bidFileO.get().record());
     }
 
-    public void linkBid(String key, Bid bid) throws IOException {
-        Optional<BidFile> bidFileO = bidFileRepository.findById(key);
+    public void linkBid(String filename, Bid bid) throws IOException {
+        Optional<BidFile> bidFileO = bidFileRepository.findById(filename);
         if (bidFileO.isEmpty()) {
             throw new NotFoundException("No file with such key");
         }

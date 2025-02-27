@@ -4,6 +4,7 @@ import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -16,21 +17,22 @@ import ru.itmo.is.utils.AnnotationUtils;
 
 import java.util.Arrays;
 
+@Log4j2
 @Component
 @RequiredArgsConstructor
 public class AuthInterceptor implements HandlerInterceptor {
-    private static final String AUTH_PREFIX = "Bearer ";
+    private static final String AUTH_PREFIX = "Bearer";
 
     private final JwtManager jwtManager;
     private final SecurityContext securityContext;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+        log.info("Request handled: {}", request.getRequestURI());
         String authHeader = request.getHeader("Authorization");
         if (authHeader != null && authHeader.startsWith(AUTH_PREFIX)) {
-            String token = authHeader.substring(AUTH_PREFIX.length());
-
             try {
+                String token = authHeader.split(" ")[1];
                 String username = jwtManager.getLogin(token);
                 User.Role role = jwtManager.getRole(token);
 

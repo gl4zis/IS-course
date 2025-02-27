@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.itmo.is.entity.notification.Notification;
 import ru.itmo.is.entity.notification.NotificationKey;
@@ -16,5 +17,5 @@ public interface NotificationRepository extends CrudRepository<Notification, Not
     @Modifying
     @Transactional
     @Query("UPDATE Notification n SET n.status = 'SENT' WHERE n.id in :keys")
-    void setSentStatus(List<NotificationKey> keys);
+    void setSentStatus(@Param("keys") List<NotificationKey> keys);
 }

@@ -30,6 +30,6 @@ public class User {
         NON_RESIDENT,
         RESIDENT,
         MANAGER,
-        SECURITY
+        GUARD
     }
 }

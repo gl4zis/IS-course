@@ -9,18 +9,19 @@ import ru.itmo.is.service.GuardService;
 
 import java.util.List;
 
-@RolesAllowed(User.Role.SECURITY)
 @RestController
 @RequestMapping("/guard")
 @RequiredArgsConstructor
 public class GuardController {
     private final GuardService guardService;
 
+    @RolesAllowed(User.Role.GUARD)
     @PostMapping("/entry")
     public void entry(@RequestParam String login) {
         guardService.entry(login);
     }
 
+    @RolesAllowed(User.Role.GUARD)
     @PostMapping("/exit")
     public void exit(@RequestParam String login) {
         guardService.exit(login);

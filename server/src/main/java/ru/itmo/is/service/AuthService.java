@@ -38,9 +38,8 @@ public class AuthService {
         Optional<User> userO = userRepository.findById(req.getLogin());
         if (userO.isEmpty() || !PasswordManager.matches(req.getPassword(), userO.get().getPassword())) {
             throw new UnauthorizedException("Invalid credentials");
-
         }
-        return new JwtResponse(jwtManager.createToken(userO.get()), userO.get().getRole());
+        return new JwtResponse(jwtManager.createToken(userO.get()));
     }
 
     public void registerOther(RegisterRequest req) {
@@ -72,7 +71,7 @@ public class AuthService {
             throw new ConflictException("User already exists");
         }
         userRepository.save(user);
-        return new JwtResponse(jwtManager.createToken(user), user.getRole());
+        return new JwtResponse(jwtManager.createToken(user));
     }
 
     private boolean isManagerExists() {

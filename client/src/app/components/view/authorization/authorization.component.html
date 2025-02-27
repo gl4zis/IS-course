@@ -1,0 +1,57 @@
+<nav-header/>
+<div class="form center">
+  <p-card>
+    <ng-template pTemplate="title">{{ getTitle() }}</ng-template>
+    <ng-container *ngIf="authService.isAuthorized()">
+      <div class="center" style="margin-bottom: 20px">
+        You are already authorized as '{{ authService.getLogin() }}'
+      </div>
+        <p-button severity="danger" size="small" (click)="authService.logout()">Logout</p-button>
+    </ng-container>
+
+    <ng-container *ngIf="!authService.isAuthorized()">
+      <div class="center" style="white-space: pre-line">
+        {{ isSignIn ? 'Doesn\'t' : 'Already '}} have an account?
+      </div>
+      <div class="center ref" (click)="changeForm()">{{ isSignIn ? 'Sign Up' : 'Sign In' }}</div>
+
+      <div class="input-row">
+        <div class="input" style="width: 100%">
+          <p-floatLabel>
+            <input pInputText
+                   id="login"
+                   required
+                   minlength="4"
+                   [(ngModel)]="form.login"
+                   #login="ngModel"/>
+            <label for="login">Username</label>
+          </p-floatLabel>
+          <div class="error" *ngIf="!isSignIn && login.invalid && (login.touched || login.dirty)">
+            Username should have at least 4 symbols
+          </div>
+        </div>
+      </div>
+      <div class="input-row">
+        <div class="input">
+          <p-floatLabel>
+            <p-password id="password"
+                        [(ngModel)]="form.password"
+                        [toggleMask]="true"
+                        [feedback]="false"
+                        required
+                        minlength="6"
+                        #password="ngModel"/>
+            <label for="password">Password</label>
+          </p-floatLabel>
+          <div class="error" *ngIf="!isSignIn && password.invalid && (password.touched || password.dirty)">
+            Password should have at least 6 symbols
+          </div>
+        </div>
+      </div>
+
+      <div class="center" style="margin-top: 30px;">
+        <p-button (click)="onSubmit()" [disabled]="!isSignIn && (login.invalid || password.invalid)">Submit</p-button>
+      </div>
+    </ng-container>
+  </p-card>
+</div>

@@ -21,9 +21,9 @@ public class FileController {
         fileService.upload(file);
     }
 
-    @PostMapping("/download/{key}")
-    public ResponseEntity<Resource> download(@PathVariable String key) {
-        FileResponse file = fileService.get(key);
+    @PostMapping("/download/{filename}")
+    public ResponseEntity<Resource> download(@PathVariable(name = "filename") String filename) {
+        FileResponse file = fileService.get(filename);
 
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)

@@ -39,7 +39,7 @@ public class AuthController {
         authService.registerOther(req);
     }
 
-    @PostMapping("/change-pass")
+    @PostMapping("/change-password")
     public void changePassword(@RequestBody @Valid PasswordChangeRequest req) {
         authService.changePassword(req);
     }
