@@ -3,6 +3,7 @@ import {environment} from '../environment/environment';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {Notification} from '../models/notification/notification.model';
+import {BaseResponse} from '../models/base.response';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,15 @@ export class NotificationRepository {
 
   constructor(private http: HttpClient) {}
 
-  getNewNotifications(): Observable<Notification[]> {
-    return this.http.get<Notification[]>(`${this.api}/new`);
+  getUnreadNotifications(): Observable<Notification[]> {
+    return this.http.get<Notification[]>(`${this.api}/unread`);
+  }
+
+  markAsRead(notificationId: number): Observable<void> {
+    return this.http.post<void>(`${this.api}/mark-as-read?id=${notificationId}`, {});
+  }
+
+  markAllAsRead(): Observable<void> {
+    return this.http.post<void>(`${this.api}/mark-all-as-read`, {});
   }
 }

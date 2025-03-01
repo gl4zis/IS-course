@@ -26,6 +26,18 @@ public class User {
     @OneToMany(mappedBy = "manager", fetch = FetchType.LAZY)
     private List<Bid> managedBids;
 
+    @Override
+    public int hashCode() {
+        return login.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        return login.equals(((User) o).login);
+    }
+
     public enum Role {
         NON_RESIDENT,
         RESIDENT,

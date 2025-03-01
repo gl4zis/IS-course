@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.itmo.is.dto.request.LoginRequest;
 import ru.itmo.is.dto.request.PasswordChangeRequest;
 import ru.itmo.is.dto.request.RegisterRequest;
-import ru.itmo.is.dto.response.JwtResponse;
+import ru.itmo.is.dto.response.util.BaseResponse;
 import ru.itmo.is.entity.user.User;
 import ru.itmo.is.exception.BadRequestException;
 import ru.itmo.is.exception.ConflictException;
@@ -26,7 +26,7 @@ public class AuthService {
     private final UserMapper mapper;
     private final SecurityContext securityContext;
 
-    public JwtResponse register(RegisterRequest req) {
+    public BaseResponse<String> register(RegisterRequest req) {
         return switch (req.getRole()) {
             case MANAGER -> registerManager(mapper.toUser(req));
             case NON_RESIDENT -> saveAndGetToken(mapper.toUser(req));
@@ -34,12 +34,12 @@ public class AuthService {
         };
     }
 
-    public JwtResponse login(LoginRequest req) {
+    public BaseResponse<String> login(LoginRequest req) {
         Optional<User> userO = userRepository.findById(req.getLogin());
         if (userO.isEmpty() || !PasswordManager.matches(req.getPassword(), userO.get().getPassword())) {
             throw new UnauthorizedException("Invalid credentials");
         }
-        return new JwtResponse(jwtManager.createToken(userO.get()));
+        return new BaseResponse<>(jwtManager.createToken(userO.get()));
     }
 
     public void registerOther(RegisterRequest req) {
@@ -59,19 +59,19 @@ public class AuthService {
         userRepository.save(user);
     }
 
-    private JwtResponse registerManager(User user) {
+    private BaseResponse<String> registerManager(User user) {
         if (isManagerExists()) {
             throw new UnauthorizedException("Invalid role");
         }
         return saveAndGetToken(user);
     }
 
-    private JwtResponse saveAndGetToken(User user) {
+    private BaseResponse<String> saveAndGetToken(User user) {
         if (userRepository.existsByLogin(user.getLogin())) {
             throw new ConflictException("User already exists");
         }
         userRepository.save(user);
-        return new JwtResponse(jwtManager.createToken(user));
+        return new BaseResponse<>(jwtManager.createToken(user));
     }
 
     private boolean isManagerExists() {

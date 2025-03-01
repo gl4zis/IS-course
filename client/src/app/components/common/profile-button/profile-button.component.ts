@@ -2,8 +2,8 @@ import {Component, OnInit} from '@angular/core';
 import {Button} from 'primeng/button';
 import {IconFieldModule} from 'primeng/iconfield';
 import {AvatarModule} from 'primeng/avatar';
-import {AuthService} from '../../../services/auth/auth.service';
 import {Router} from '@angular/router';
+import {AuthService} from '../../../services/auth.service';
 
 @Component({
   selector: 'profile-button',

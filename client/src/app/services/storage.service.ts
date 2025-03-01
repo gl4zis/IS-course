@@ -3,13 +3,11 @@ import {Injectable} from '@angular/core';
 @Injectable({
   providedIn: 'root'
 })
-export class AuthStorageService {
+export class StorageService {
 
   private readonly TOKEN_KEY = 'jwt';
 
-  constructor() { }
-
-  reset(): void {
+  resetAuth(): void {
     localStorage.removeItem(this.TOKEN_KEY);
   }
 
@@ -18,7 +16,11 @@ export class AuthStorageService {
   }
 
   getToken(): string | undefined {
-    const token = localStorage.getItem(this.TOKEN_KEY);
-    return token ? token : undefined;
+    return this.getItem(this.TOKEN_KEY);
+  }
+
+  private getItem(name: string): string | undefined {
+    const item = localStorage.getItem(name);
+    return item ? item : undefined;
   }
 }

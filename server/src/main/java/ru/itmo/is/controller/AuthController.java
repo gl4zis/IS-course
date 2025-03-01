@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.itmo.is.dto.request.LoginRequest;
 import ru.itmo.is.dto.request.PasswordChangeRequest;
 import ru.itmo.is.dto.request.RegisterRequest;
-import ru.itmo.is.dto.response.JwtResponse;
+import ru.itmo.is.dto.response.util.BaseResponse;
 import ru.itmo.is.entity.user.User;
 import ru.itmo.is.security.RolesAllowed;
 import ru.itmo.is.security.Anonymous;
@@ -23,13 +23,13 @@ public class AuthController {
 
     @Anonymous
     @PostMapping("/register")
-    public JwtResponse register(@RequestBody @Valid RegisterRequest req) {
+    public BaseResponse<String> register(@RequestBody @Valid RegisterRequest req) {
         return authService.register(req);
     }
 
     @Anonymous
     @PostMapping("/login")
-    public JwtResponse login(@RequestBody @Valid LoginRequest req) {
+    public BaseResponse<String> login(@RequestBody @Valid LoginRequest req) {
         return authService.login(req);
     }
 

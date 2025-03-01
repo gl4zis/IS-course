@@ -10,14 +10,13 @@ import ru.itmo.is.entity.user.User;
 @Getter
 @Setter
 public class Notification {
-    @EmbeddedId
-    private NotificationKey id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     @ManyToOne
-    @MapsId("bidId")
     @JoinColumn(name = "bid_id")
     private Bid bid;
     @ManyToOne
-    @MapsId("receiver")
     @JoinColumn(name = "receiver")
     private User receiver;
 
@@ -27,6 +26,6 @@ public class Notification {
 
     public enum Status {
         CREATED,
-        SENT
+        READ
     }
 }

@@ -1,0 +1,16 @@
+.page {
+  flex-direction: column;
+}
+
+.scrollable {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.notification {
+  width: 60%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 20px;
+}

@@ -8,7 +8,6 @@ public class PasswordManager {
     private PasswordManager() {}
 
     public static boolean matches(String password, String hash) {
-        System.out.println(hash(password));
         return hash.equals(hash(password));
     }
 

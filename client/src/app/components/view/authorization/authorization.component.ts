@@ -3,16 +3,14 @@ import {NavHeaderComponent} from '../../common/nav-header/nav-header.component';
 import {Card} from 'primeng/card';
 import {LoginReq} from '../../../models/auth/login.model';
 import { RegisterReq } from '../../../models/auth/register.model';
-import {AuthService} from '../../../services/auth/auth.service';
-import {Router} from '@angular/router';
 import {PrimeTemplate} from 'primeng/api';
 import {NgIf} from '@angular/common';
 import {Button} from 'primeng/button';
 import {InputText} from 'primeng/inputtext';
 import {FormsModule} from '@angular/forms';
 import {Password} from 'primeng/password';
-import {Checkbox} from 'primeng/checkbox';
 import {FloatLabelModule} from 'primeng/floatlabel';
+import {AuthService} from '../../../services/auth.service';
 
 @Component({
   selector: 'authorization-view',
@@ -39,8 +37,7 @@ export class AuthorizationComponent {
 
   constructor(
     protected authService: AuthService,
-  ) {
-  }
+  ) {}
 
   onSubmit(): void {
     if (this.isSignIn) {
