@@ -22,7 +22,7 @@ public class FileController {
     }
 
     @PostMapping("/download/{filename}")
-    public ResponseEntity<Resource> download(@PathVariable(name = "filename") String filename) {
+    public ResponseEntity<Resource> download(@PathVariable("filename") String filename) {
         FileResponse file = fileService.get(filename);
 
         return ResponseEntity.ok()

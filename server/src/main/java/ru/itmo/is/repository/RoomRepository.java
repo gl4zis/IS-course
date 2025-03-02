@@ -10,6 +10,6 @@ import java.util.List;
 @Repository
 public interface RoomRepository extends CrudRepository<Room, Integer> {
     List<Integer> getIdsByType(Room.Type type);
-    @Query(value = "SELECT * FROM is_room_filled(:roomId)", nativeQuery = true)
-    boolean isRoomFilled(Integer roomId);
+    @Query(value = "SELECT NOT is_room_filled(:roomId)", nativeQuery = true)
+    boolean isRoomFree(Integer roomId);
 }

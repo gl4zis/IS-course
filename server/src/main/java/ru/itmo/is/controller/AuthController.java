@@ -7,7 +7,7 @@ import ru.itmo.is.dto.request.LoginRequest;
 import ru.itmo.is.dto.request.PasswordChangeRequest;
 import ru.itmo.is.dto.request.RegisterRequest;
 import ru.itmo.is.dto.response.ProfileResponse;
-import ru.itmo.is.dto.response.util.BaseResponse;
+import ru.itmo.is.dto.response.OneFieldResponse;
 import ru.itmo.is.entity.user.User;
 import ru.itmo.is.security.RolesAllowed;
 import ru.itmo.is.security.Anonymous;
@@ -21,13 +21,13 @@ public class AuthController {
 
     @Anonymous
     @PostMapping("/register")
-    public BaseResponse<String> register(@RequestBody @Valid RegisterRequest req) {
+    public OneFieldResponse<String> register(@RequestBody @Valid RegisterRequest req) {
         return authService.register(req);
     }
 
     @Anonymous
     @PostMapping("/login")
-    public BaseResponse<String> login(@RequestBody @Valid LoginRequest req) {
+    public OneFieldResponse<String> login(@RequestBody @Valid LoginRequest req) {
         return authService.login(req);
     }
 

@@ -1,5 +1,6 @@
 package ru.itmo.is.service;
 
+import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.itmo.is.dto.request.bid.BidRequest;
@@ -21,6 +22,8 @@ import ru.itmo.is.entity.dorm.University;
 import ru.itmo.is.entity.user.Resident;
 import ru.itmo.is.entity.user.User;
 import ru.itmo.is.exception.BadRequestException;
+import ru.itmo.is.exception.ForbiddenException;
+import ru.itmo.is.exception.NotFoundException;
 import ru.itmo.is.repository.*;
 
 import java.util.List;
@@ -37,67 +40,28 @@ public class BidService {
     private final EventRepository eventRepository;
     private final ResidentRepository residentRepository;
 
-    public List<BidResponse> getNewBids() {
+    public List<BidResponse> getInProcessBids() {
         List<Bid> newBids = bidRepository.getByStatus(Bid.Status.IN_PROCESS);
-        return newBids.stream().map(this::map).toList();
+        return newBids.stream().map(this::mapBid).toList();
     }
 
-    public void createOccupationBid(OccupationRequest req) {
-        Optional<University> universityO = universityRepository.findById(req.getUniversityId());
-        if (universityO.isEmpty()) {
-            throw new BadRequestException("No such university");
-        }
-        University university = universityO.get();
-        Optional<Dormitory> dormitoryO = university.getDormitories().stream()
-                .filter(dorm -> dorm.getId().equals(req.getDormitoryId())).findFirst();
-        if (dormitoryO.isEmpty()) {
-            throw new BadRequestException("No such dormitory or this dormitory is not linked with the university");
-        }
-
-        var bid = new OccupationBid();
-        bid.setFiles(bidFileRepository.getByKeyIn(req.getAttachments()));
-        bid.setSender(currentUser());
-        bid.setText(req.getText());
-        bid.setUniversity(university);
-        bid.setDormitory(dormitoryO.get());
-        bidRepository.save(bid);
+    public List<BidResponse> getSelfBids() {
+        User sender = userService.getCurrentUserOrThrow();
+        List<Bid> bids = bidRepository.getBySenderLoginOrderByIdDesc(sender.getLogin());
+        return bids.stream().map(this::mapBid).toList();
     }
 
-    public void createEvictionBid(BidRequest req) {
-        var bid = new Bid();
-        bid.setFiles(bidFileRepository.getByKeyIn(req.getAttachments()));
-        bid.setSender(currentUser());
-        bid.setText(req.getText());
-        bid.setType(Bid.Type.EVICTION);
-        bidRepository.save(bid);
-    }
-
-    public void createDepartureBid(DepartureRequest req) {
-        var bid = new DepartureBid();
-        bid.setFiles(bidFileRepository.getByKeyIn(req.getAttachments()));
-        bid.setSender(currentUser());
-        bid.setText(req.getText());
-        bid.setDayFrom(req.getDayFrom());
-        bid.setDayTo(req.getDayTo());
-        bidRepository.save(bid);
-    }
-
-    public void createRoomChangeBid(RoomChangeRequest req) {
-        Optional<Room> roomO = Optional.empty();
-        if (req.getRoomToId() != null) {
-            roomO = roomRepository.findById(req.getRoomToId());
-            if (roomO.isEmpty()) {
-                throw new BadRequestException("No such room");
-            }
+    public BidResponse getBid(long id) {
+        Optional<Bid> bidO = bidRepository.findById(id);
+        if (bidO.isEmpty()) {
+            throw new NotFoundException("No bid with such id");
         }
 
-        var bid = new RoomChangeBid();
-        bid.setFiles(bidFileRepository.getByKeyIn(req.getAttachments()));
-        bid.setSender(currentUser());
-        bid.setText(req.getText());
-        bid.setRoomTo(roomO.orElse(null));
-        bid.setRoomPreferType(req.getRoomPreferType());
-        bidRepository.save(bid);
+        User user = userService.getCurrentUserOrThrow();
+        if (user.getRole() != User.Role.MANAGER || !bidO.get().getSender().equals(user)) {
+            throw new ForbiddenException("You are not allowed to get bid by this user");
+        }
+        return mapBid(bidO.get());
     }
 
     public void denyBid(Long id) {
@@ -107,7 +71,7 @@ public class BidService {
         }
         Bid bid = bidO.get();
         bid.setStatus(Bid.Status.DENIED);
-        bid.setManager(currentUser());
+        bid.setManager(userService.getCurrentUserOrThrow());
         bidRepository.save(bid);
     }
 
@@ -122,7 +86,7 @@ public class BidService {
         }
 
         bid.setStatus(Bid.Status.ACCEPTED);
-        bid.setManager(currentUser());
+        bid.setManager(userService.getCurrentUserOrThrow());
         switch (bid.getType()) {
             case OCCUPATION -> acceptOccupationBid((OccupationBid) bid);
             case EVICTION -> acceptEvictionBid(bid);
@@ -132,12 +96,106 @@ public class BidService {
         bidRepository.save(bid);
     }
 
+    public void saveOccupationBid(@Nullable Long bidId, OccupationRequest req) {
+        var bid = new OccupationBid();
+        if (bidId != null) {
+            checkEditableBid(bidId, Bid.Type.OCCUPATION);
+            bid.setId(bidId);
+        }
+
+        Optional<University> universityO = universityRepository.findById(req.getUniversityId());
+        if (universityO.isEmpty()) {
+            throw new BadRequestException("No such university");
+        }
+        University university = universityO.get();
+        Optional<Dormitory> dormitoryO = university.getDormitories().stream()
+                .filter(dorm -> dorm.getId().equals(req.getDormitoryId())).findFirst();
+        if (dormitoryO.isEmpty()) {
+            throw new BadRequestException("No such dormitory or this dormitory is not linked with the university");
+        }
+
+        bid.setFiles(bidFileRepository.getByKeyIn(req.getAttachments()));
+        bid.setSender(userService.getCurrentUserOrThrow());
+        bid.setText(req.getText());
+        bid.setUniversity(university);
+        bid.setDormitory(dormitoryO.get());
+        bidRepository.save(bid);
+    }
+
+    public void saveEvictionBid(@Nullable Long bidId, BidRequest req) {
+        var bid = new Bid();
+        if (bidId != null) {
+            checkEditableBid(bidId, Bid.Type.EVICTION);
+            bid.setId(bidId);
+        }
+
+        bid.setFiles(bidFileRepository.getByKeyIn(req.getAttachments()));
+        bid.setSender(userService.getCurrentUserOrThrow());
+        bid.setText(req.getText());
+        bid.setType(Bid.Type.EVICTION);
+        bidRepository.save(bid);
+    }
+
+    public void saveDepartureBid(@Nullable Long bidId, DepartureRequest req) {
+        var bid = new DepartureBid();
+        if (bidId != null) {
+            checkEditableBid(bidId, Bid.Type.DEPARTURE);
+            bid.setId(bidId);
+        }
+
+        bid.setFiles(bidFileRepository.getByKeyIn(req.getAttachments()));
+        bid.setSender(userService.getCurrentUserOrThrow());
+        bid.setText(req.getText());
+        bid.setDayFrom(req.getDayFrom());
+        bid.setDayTo(req.getDayTo());
+        bidRepository.save(bid);
+    }
+
+    public void saveRoomChangeBid(@Nullable Long bidId, RoomChangeRequest req) {
+        var bid = new RoomChangeBid();
+        if (bidId != null) {
+            checkEditableBid(bidId, Bid.Type.ROOM_CHANGE);
+            bid.setId(bidId);
+        }
+
+        Optional<Room> roomO = Optional.empty();
+        if (req.getRoomToId() != null) {
+            roomO = roomRepository.findById(req.getRoomToId());
+            if (roomO.isEmpty()) {
+                throw new BadRequestException("No such room");
+            }
+        }
+
+        bid.setFiles(bidFileRepository.getByKeyIn(req.getAttachments()));
+        bid.setSender(userService.getCurrentUserOrThrow());
+        bid.setText(req.getText());
+        bid.setRoomTo(roomO.orElse(null));
+        bid.setRoomPreferType(req.getRoomPreferType());
+        bidRepository.save(bid);
+    }
+
+    private void checkEditableBid(long id, Bid.Type type) {
+        Optional<Bid> bidO = bidRepository.findById(id);
+        if (bidO.isEmpty()) {
+            throw new NotFoundException("No such bid");
+        }
+        if (!userService.getCurrentUserOrThrow().equals(bidO.get().getSender())) {
+            throw new ForbiddenException("You are not allowed to edit this bid");
+        }
+        if (!bidO.get().getType().equals(type)) {
+            throw new BadRequestException("Invalid type of original bid");
+        }
+        if (!bidO.get().getStatus().isEditable()) {
+            throw new BadRequestException("This bid ");
+        }
+    }
+
     private void acceptOccupationBid(OccupationBid bid) {
         List<Integer> blockRoomIds = roomRepository.getIdsByType(Room.Type.BLOCK);
-        Optional<Integer> roomIdO = blockRoomIds.stream().filter(roomRepository::isRoomFilled).findFirst();
+        Optional<Integer> roomIdO = blockRoomIds.stream().filter(roomRepository::isRoomFree).findFirst();
         if (roomIdO.isEmpty()) {
             List<Integer> aisleRoomIds = roomRepository.getIdsByType(Room.Type.AISLE);
-            roomIdO = aisleRoomIds.stream().filter(roomRepository::isRoomFilled).findFirst();
+            roomIdO = aisleRoomIds.stream().filter(roomRepository::isRoomFree).findFirst();
         }
         if (roomIdO.isEmpty()) {
             throw new BadRequestException("No free room");
@@ -177,9 +235,12 @@ public class BidService {
         Room room;
         if (bid.getRoomTo() != null) {
             room = bid.getRoomTo();
+            if (room.getResidents().size() == room.getCapacity()) {
+                throw new BadRequestException("Room is not free");
+            }
         } else {
             List<Integer> roomIds = roomRepository.getIdsByType(bid.getRoomPreferType());
-            Optional<Integer> roomIdO = roomIds.stream().filter(roomRepository::isRoomFilled).findFirst();
+            Optional<Integer> roomIdO = roomIds.stream().filter(roomRepository::isRoomFree).findFirst();
             if (roomIdO.isEmpty()) {
                 throw new BadRequestException("No free room");
             }
@@ -197,16 +258,12 @@ public class BidService {
         eventRepository.save(event);
     }
 
-    private BidResponse map(Bid bid) {
+    private BidResponse mapBid(Bid bid) {
         return switch (bid) {
             case DepartureBid db -> new DepartureBidResponse(db);
             case OccupationBid ob -> new OccupationBidResponse(ob);
             case RoomChangeBid rcb -> new RoomChangeResponse(rcb);
             default -> new BidResponse(bid);
         };
-    }
-
-    private User currentUser() {
-        return userService.getCurrentUserOrThrow();
     }
 }

@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface BidRepository extends CrudRepository<Bid, Long> {
     List<Bid> getByStatus(Bid.Status status);
+    List<Bid> getBySenderLoginOrderByIdDesc(String login);
 }

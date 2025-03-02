@@ -26,13 +26,18 @@ export class NavHeaderComponent implements OnInit {
 
   private readonly nonResidentPages: MenuItem[] = [
     {
-      label: 'Occupation',
-      command: () => this.router.navigate(['occupation']),
-      icon: 'pi pi-home'
-    }
+      label: 'Bids',
+      command: () => this.router.navigate(['bids']),
+      icon: 'pi pi-file-edit'
+    },
   ];
 
   private readonly residentPages: MenuItem[] = [
+    {
+      label: 'In/Out',
+      command: () => this.router.navigate(['inout']),
+      icon: 'pi pi-arrow-right-arrow-left'
+    },
     {
       label: 'Bids',
       command: () => this.router.navigate(['bids']),
@@ -54,6 +59,11 @@ export class NavHeaderComponent implements OnInit {
   ];
 
   private readonly managerPages: MenuItem[] = [
+    {
+      label: 'In/Out',
+      command: () => this.router.navigate(['inout']),
+      icon: 'pi pi-arrow-right-arrow-left'
+    },
     {
       label: 'Bids',
       command: () => this.router.navigate(['bids']),

@@ -1,8 +1,11 @@
 package ru.itmo.is.entity.bid;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 import ru.itmo.is.entity.Event;
 import ru.itmo.is.entity.user.User;
 
@@ -41,9 +44,15 @@ public class Bid {
         EVICTION
     }
 
+    @Getter
+    @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+    @RequiredArgsConstructor
     public enum Status {
-        IN_PROCESS,
-        ACCEPTED,
-        DENIED
+        IN_PROCESS(true),
+        PENDING_REVISION(true),
+        ACCEPTED(false),
+        DENIED(false);
+
+        boolean editable;
     }
 }

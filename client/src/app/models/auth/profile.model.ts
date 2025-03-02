@@ -1,4 +1,5 @@
 import {Role} from './role.model';
+import {RoomType} from '../room-type.model';
 
 export interface Profile {
   name: string;
@@ -15,9 +16,4 @@ export interface Room {
   capacity: number;
   floor: number;
   cost: number;
-}
-
-export enum RoomType {
-  BLOCK = 'BLOCK',
-  AISLE = 'AISLE'
 }

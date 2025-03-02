@@ -1,15 +1,16 @@
 package ru.itmo.is.dto.response.bid;
 
+import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 import ru.itmo.is.entity.bid.RoomChangeBid;
 import ru.itmo.is.entity.dorm.Room;
 
 @Getter
-@Setter
-@NoArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class RoomChangeResponse extends BidResponse {
+    Integer roomToId;
+    Room.Type roomPreferType;
 
     public RoomChangeResponse(RoomChangeBid bid) {
         super(bid);
@@ -17,7 +18,4 @@ public class RoomChangeResponse extends BidResponse {
         this.roomToId = roomTo == null ? null : roomTo.getId();
         this.roomPreferType = bid.getRoomPreferType();
     }
-
-    private Integer roomToId;
-    private Room.Type roomPreferType;
 }

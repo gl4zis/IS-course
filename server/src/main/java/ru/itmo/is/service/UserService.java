@@ -25,16 +25,11 @@ public class UserService {
         throw new NotFoundException("Resident not found");
     }
 
-    public Optional<User> getCurrentUser() {
-        String login = securityContext.getUsername();
-        return login == null ? Optional.empty() : userRepository.findById(login);
-    }
-
     public User getCurrentUserOrThrow() {
-        Optional<User> user = getCurrentUser();
-        if (user.isPresent()) {
-            return user.get();
+        String login = securityContext.getUsername();
+        if (login == null) {
+            throw new ForbiddenException("You are not logged in");
         }
-        throw new ForbiddenException("You are not logged in");
+        return userRepository.findById(login).orElseThrow(() -> new ForbiddenException("You are not logged in"));
     }
 }

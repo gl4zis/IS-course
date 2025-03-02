@@ -1,4 +1,4 @@
-<nav-header/>
+<nav-header *ngIf="authService.isAuthorized()"/>
 <div class="form center">
   <p-card>
     <ng-template pTemplate="title">{{ getTitle() }}</ng-template>
