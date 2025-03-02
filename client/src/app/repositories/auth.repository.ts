@@ -6,6 +6,7 @@ import {Observable} from 'rxjs';
 import {RegisterReq} from '../models/auth/register.model';
 import {PasswordChangeReq} from '../models/auth/password-change.request';
 import {BaseResponse} from '../models/base.response';
+import {Profile} from '../models/auth/profile.model';
 
 @Injectable({
   providedIn: 'root'
@@ -29,5 +30,9 @@ export class AuthRepository {
 
   changePassword(req: PasswordChangeReq): Observable<void> {
     return this.http.post<void>(`${this.api}/change-password`, req);
+  }
+
+  getProfile(): Observable<Profile> {
+    return this.http.get<Profile>(`${this.api}/profile`);
   }
 }

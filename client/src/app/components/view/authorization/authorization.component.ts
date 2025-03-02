@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {NavHeaderComponent} from '../../common/nav-header/nav-header.component';
 import {Card} from 'primeng/card';
 import {LoginReq} from '../../../models/auth/login.model';
@@ -11,6 +11,10 @@ import {FormsModule} from '@angular/forms';
 import {Password} from 'primeng/password';
 import {FloatLabelModule} from 'primeng/floatlabel';
 import {AuthService} from '../../../services/auth.service';
+import {Profile} from '../../../models/auth/profile.model';
+import {Router} from '@angular/router';
+import {AuthRepository} from '../../../repositories/auth.repository';
+import {Role} from '../../../models/auth/role.model';
 
 @Component({
   selector: 'authorization-view',
@@ -28,16 +32,30 @@ import {AuthService} from '../../../services/auth.service';
   ],
   templateUrl: './authorization.component.html'
 })
-export class AuthorizationComponent {
+export class AuthorizationComponent implements OnInit {
   isSignIn = true;
   form: LoginReq | RegisterReq = {
     login: '',
     password: ''
   };
+  profile?: Profile;
 
   constructor(
     protected authService: AuthService,
+    private authRepository: AuthRepository,
   ) {}
+
+  ngOnInit() {
+    this.authService.isAuthorized$.subscribe(isAuthorized => {
+      if (isAuthorized) {
+        this.authRepository.getProfile().subscribe({
+          next: (resp) => this.profile = resp
+        });
+      } else {
+        this.profile = undefined;
+      }
+    });
+  }
 
   onSubmit(): void {
     if (this.isSignIn) {
@@ -66,4 +84,6 @@ export class AuthorizationComponent {
       password: ''
     }
   }
+
+  protected readonly Role = Role;
 }

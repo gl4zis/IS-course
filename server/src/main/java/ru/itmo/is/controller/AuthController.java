@@ -2,13 +2,11 @@ package ru.itmo.is.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.itmo.is.dto.request.LoginRequest;
 import ru.itmo.is.dto.request.PasswordChangeRequest;
 import ru.itmo.is.dto.request.RegisterRequest;
+import ru.itmo.is.dto.response.ProfileResponse;
 import ru.itmo.is.dto.response.util.BaseResponse;
 import ru.itmo.is.entity.user.User;
 import ru.itmo.is.security.RolesAllowed;
@@ -42,5 +40,10 @@ public class AuthController {
     @PostMapping("/change-password")
     public void changePassword(@RequestBody @Valid PasswordChangeRequest req) {
         authService.changePassword(req);
+    }
+
+    @GetMapping("/profile")
+    public ProfileResponse getProfile() {
+        return authService.getProfile();
     }
 }

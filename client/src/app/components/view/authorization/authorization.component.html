@@ -3,10 +3,16 @@
   <p-card>
     <ng-template pTemplate="title">{{ getTitle() }}</ng-template>
     <ng-container *ngIf="authService.isAuthorized()">
-      <div class="center" style="margin-bottom: 20px">
-        You are already authorized as '{{ authService.getLogin() }}'
-      </div>
-        <p-button severity="danger" size="small" (click)="authService.logout()">Logout</p-button>
+      <div>&#64;{{ authService.getLogin() }}</div>
+      <div>Name: {{ this.profile?.name }}</div>
+      <div>Surname: {{ this.profile?.surname }}</div>
+      <div>Role: {{ this.profile?.role }}</div>
+      <ng-container *ngIf="this.profile && this.profile.role === Role.RESIDENT">
+        <div>University: {{ this.profile.university }}</div>
+        <div>Dormitory: {{ this.profile.room?.dormitory }}</div>
+        <div>Room: {{ this.profile.room?.number }}</div>
+      </ng-container>
+      <p-button severity="danger" size="small" (click)="authService.logout()">Logout</p-button>
     </ng-container>
 
     <ng-container *ngIf="!authService.isAuthorized()">

@@ -5,7 +5,10 @@ import org.springframework.stereotype.Service;
 import ru.itmo.is.dto.request.LoginRequest;
 import ru.itmo.is.dto.request.PasswordChangeRequest;
 import ru.itmo.is.dto.request.RegisterRequest;
+import ru.itmo.is.dto.response.ProfileResponse;
 import ru.itmo.is.dto.response.util.BaseResponse;
+import ru.itmo.is.entity.dorm.Room;
+import ru.itmo.is.entity.user.Resident;
 import ru.itmo.is.entity.user.User;
 import ru.itmo.is.exception.BadRequestException;
 import ru.itmo.is.exception.ConflictException;
@@ -25,6 +28,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final UserMapper mapper;
     private final SecurityContext securityContext;
+    private final UserService userService;
 
     public BaseResponse<String> register(RegisterRequest req) {
         return switch (req.getRole()) {
@@ -59,6 +63,10 @@ public class AuthService {
         userRepository.save(user);
     }
 
+    public ProfileResponse getProfile() {
+        return mapToProfile(userService.getCurrentUserOrThrow());
+    }
+
     private BaseResponse<String> registerManager(User user) {
         if (isManagerExists()) {
             throw new UnauthorizedException("Invalid role");
@@ -76,5 +84,40 @@ public class AuthService {
 
     private boolean isManagerExists() {
         return userRepository.countByRole(User.Role.MANAGER) > 0;
+    }
+
+    private ProfileResponse mapToProfile(User user) {
+        if (user instanceof Resident resident) {
+            return mapResidentToProfile(resident);
+        }
+
+        return new ProfileResponse(
+                user.getName(),
+                user.getSurname(),
+                user.getRole(),
+                null,
+                null
+        );
+    }
+
+    private ProfileResponse mapResidentToProfile(Resident resident) {
+        return new ProfileResponse(
+                resident.getName(),
+                resident.getSurname(),
+                resident.getRole(),
+                resident.getUniversity().getName(),
+                mapRoom(resident.getRoom())
+        );
+    }
+
+    private ProfileResponse.RoomResponse mapRoom(Room room) {
+        return new ProfileResponse.RoomResponse(
+                room.getDormitory().getAddress(),
+                room.getNumber(),
+                room.getType(),
+                room.getCapacity(),
+                room.getFloor(),
+                room.getCost()
+        );
     }
 }
