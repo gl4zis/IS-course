@@ -21,6 +21,11 @@ export class GuardRepository {
   }
 
   getHistory(login: string): Observable<GuardHistory[]> {
+    console.log(login);
     return this.http.get<GuardHistory[]>(`${this.api}/history?login=${login}`);
+  }
+
+  getSelfHistory(): Observable<GuardHistory[]> {
+    return this.http.get<GuardHistory[]>(`${this.api}/history/self`);
   }
 }

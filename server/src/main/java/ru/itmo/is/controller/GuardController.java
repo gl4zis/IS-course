@@ -29,7 +29,13 @@ public class GuardController {
 
     @RolesAllowed(User.Role.MANAGER)
     @GetMapping("/history")
-    public List<GuardHistory> getHistory(@RequestParam String login) {
+    public List<GuardHistory> getHistory(@RequestParam("login") String login) {
         return guardService.getHistory(login);
+    }
+
+    @RolesAllowed(User.Role.RESIDENT)
+    @GetMapping("/history/self")
+    public List<GuardHistory> getSelfHistory() {
+        return guardService.getSelfHistory();
     }
 }

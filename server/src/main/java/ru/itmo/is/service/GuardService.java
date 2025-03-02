@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.itmo.is.dto.response.GuardHistory;
 import ru.itmo.is.entity.Event;
+import ru.itmo.is.entity.user.User;
 import ru.itmo.is.exception.BadRequestException;
 import ru.itmo.is.repository.EventRepository;
 
@@ -32,10 +33,16 @@ public class GuardService {
     }
 
     public List<GuardHistory> getHistory(String login) {
+        userService.getResidentByLogin(login); // To check that it is resident
         List<Event> events = eventRepository.getByTypeInAndResidentLoginOrderByTimestampDesc(
                 List.of(Event.Type.IN, Event.Type.OUT), login
         );
         return events.stream().map(this::mapGuardEvent).toList();
+    }
+
+    public List<GuardHistory> getSelfHistory() {
+        User resident = userService.getCurrentUserOrThrow();
+        return getHistory(resident.getLogin());
     }
 
     private void createGuardEvent(String login, Event.Type type) {
@@ -48,7 +55,7 @@ public class GuardService {
     private GuardHistory mapGuardEvent(Event event) {
         return GuardHistory.builder()
                 .login(event.getResident().getLogin())
-                .type(GuardHistory.Type.fromEventType(event.getType()))
+                .type(event.getType())
                 .timestamp(event.getTimestamp())
                 .build();
     }
