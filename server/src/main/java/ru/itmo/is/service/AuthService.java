@@ -59,7 +59,7 @@ public class AuthService {
         if (!PasswordManager.matches(req.getOldPassword(), user.getPassword())) {
             throw new BadRequestException("Invalid old password");
         }
-        user.setPassword(req.getNewPassword());
+        user.setPassword(PasswordManager.hash(req.getNewPassword()));
         userRepository.save(user);
     }
 

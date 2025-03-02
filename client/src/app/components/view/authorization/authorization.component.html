@@ -12,7 +12,10 @@
         <div>Dormitory: {{ this.profile.room?.dormitory }}</div>
         <div>Room: {{ this.profile.room?.number }}</div>
       </ng-container>
-      <p-button severity="danger" size="small" (click)="authService.logout()">Logout</p-button>
+      <div class="form-buttons" style="width: 250px">
+        <p-button severity="danger" size="small" (click)="authService.logout()">Logout</p-button>
+        <p-button severity="help" size="small" (click)="openPasswordChanger()">Change password</p-button>
+      </div>
     </ng-container>
 
     <ng-container *ngIf="!authService.isAuthorized()">
@@ -61,3 +64,46 @@
     </ng-container>
   </p-card>
 </div>
+
+<p-dialog header="Change password" [modal]="true" [visible]="changePasswordDialog" [closable]="false">
+  <div class="input-row">
+    <div class="input">
+      <p-floatLabel>
+        <p-password id="old-password"
+                    [(ngModel)]="cpForm.oldPassword"
+                    [toggleMask]="true"
+                    [feedback]="false"
+                    required
+                    minlength="6"
+                    #oldPassword="ngModel"/>
+        <label for="old-password">Old password</label>
+      </p-floatLabel>
+      <div class="error" *ngIf="oldPassword.invalid && (oldPassword.touched || oldPassword.dirty)">
+        Password should have at least 6 symbols
+      </div>
+    </div>
+  </div>
+
+  <div class="input-row">
+    <div class="input">
+      <p-floatLabel>
+        <p-password id="new-password"
+                    [(ngModel)]="cpForm.newPassword"
+                    [toggleMask]="true"
+                    [feedback]="false"
+                    required
+                    minlength="6"
+                    #newPassword="ngModel"/>
+        <label for="new-password">New password</label>
+      </p-floatLabel>
+      <div class="error" *ngIf="newPassword.invalid && (newPassword.touched || newPassword.dirty)">
+        Password should have at least 6 symbols
+      </div>
+    </div>
+  </div>
+
+  <div class="form-buttons">
+    <p-button severity="danger" (click)="closePasswordChanger()">Cancel</p-button>
+    <p-button severity="help" (click)="changePassword()">Confirm</p-button>
+  </div>
+</p-dialog>

@@ -14,6 +14,9 @@ import {AuthService} from '../../../services/auth.service';
 import {Profile} from '../../../models/auth/profile.model';
 import {AuthRepository} from '../../../repositories/auth.repository';
 import {Role} from '../../../models/auth/role.model';
+import {Dialog} from 'primeng/dialog';
+import {PasswordChangeReq} from '../../../models/auth/password-change.request';
+import {ToastService} from '../../../services/toast.service';
 
 @Component({
   selector: 'authorization-view',
@@ -27,7 +30,8 @@ import {Role} from '../../../models/auth/role.model';
     InputText,
     FormsModule,
     FloatLabelModule,
-    Password
+    Password,
+    Dialog
   ],
   templateUrl: './authorization.component.html'
 })
@@ -37,11 +41,19 @@ export class AuthorizationComponent implements OnInit {
     login: '',
     password: ''
   };
+
   profile?: Profile;
+
+  changePasswordDialog = false;
+  cpForm: PasswordChangeReq = {
+    oldPassword: "",
+    newPassword: ""
+  };
 
   constructor(
     protected authService: AuthService,
     private authRepository: AuthRepository,
+    private toast: ToastService,
   ) {}
 
   ngOnInit() {
@@ -75,6 +87,28 @@ export class AuthorizationComponent implements OnInit {
       return 'Profile';
     }
     return this.isSignIn ? 'Sign In' : 'Sign Up';
+  }
+
+  changePassword(): void {
+    this.authRepository.changePassword(this.cpForm).subscribe({
+      next: () => {
+        this.closePasswordChanger();
+        this.authService.logout();
+        this.toast.success("Password was changed", "Authorize, using new password");
+      }
+    });
+  }
+
+  openPasswordChanger(): void {
+    this.changePasswordDialog = true;
+  }
+
+  closePasswordChanger(): void {
+    this.changePasswordDialog = false;
+    this.cpForm = {
+      oldPassword: "",
+      newPassword: ""
+    };
   }
 
   private resetForm(): void {
