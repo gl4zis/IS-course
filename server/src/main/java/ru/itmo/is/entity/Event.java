@@ -11,9 +11,10 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
+@SequenceGenerator(name = "eventSeq", sequenceName = "event_id_seq", allocationSize = 1)
 public class Event {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "eventSeq")
     private Long id;
     @Enumerated(EnumType.STRING)
     private Type type;

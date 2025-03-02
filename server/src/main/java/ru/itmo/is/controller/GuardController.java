@@ -17,13 +17,13 @@ public class GuardController {
 
     @RolesAllowed(User.Role.GUARD)
     @PostMapping("/entry")
-    public void entry(@RequestParam String login) {
+    public void entry(@RequestParam("login") String login) {
         guardService.entry(login);
     }
 
     @RolesAllowed(User.Role.GUARD)
     @PostMapping("/exit")
-    public void exit(@RequestParam String login) {
+    public void exit(@RequestParam("login") String login) {
         guardService.exit(login);
     }
 

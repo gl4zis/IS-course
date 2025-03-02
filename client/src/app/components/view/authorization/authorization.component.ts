@@ -12,7 +12,6 @@ import {Password} from 'primeng/password';
 import {FloatLabelModule} from 'primeng/floatlabel';
 import {AuthService} from '../../../services/auth.service';
 import {Profile} from '../../../models/auth/profile.model';
-import {Router} from '@angular/router';
 import {AuthRepository} from '../../../repositories/auth.repository';
 import {Role} from '../../../models/auth/role.model';
 

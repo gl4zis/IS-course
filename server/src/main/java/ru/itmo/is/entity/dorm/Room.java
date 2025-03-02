@@ -11,9 +11,10 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+@SequenceGenerator(name = "roomSeq", sequenceName = "room_id_seq", allocationSize = 1)
 public class Room {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "roomSeq")
     private Integer id;
     @ManyToOne
     @JoinColumn(name = "dormitory_id")

@@ -9,9 +9,10 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+@SequenceGenerator(name = "dormitorySeq", sequenceName = "dormitory_id_seq", allocationSize = 1)
 public class Dormitory {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "dormitorySeq")
     private Integer id;
     private String address;
 

@@ -10,9 +10,10 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+@SequenceGenerator(name = "universitySeq", sequenceName = "university_id_seq", allocationSize = 1)
 public class University {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "universitySeq")
     private Integer id;
     private String name;
     private String address;

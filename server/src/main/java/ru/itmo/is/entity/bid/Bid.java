@@ -12,9 +12,10 @@ import java.util.List;
 @Getter
 @Setter
 @Inheritance(strategy = InheritanceType.JOINED)
+@SequenceGenerator(name = "bidSeq", sequenceName = "bid_id_seq", allocationSize = 1)
 public class Bid {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "bidSeq")
     private Long id;
     @Enumerated(EnumType.STRING)
     private Type type;

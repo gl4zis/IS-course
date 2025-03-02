@@ -2,12 +2,11 @@ import {Injectable} from '@angular/core';
 import {HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
 import {catchError, Observable} from 'rxjs';
 import {ToastService} from '../services/toast.service';
-import {Router} from '@angular/router';
 import {StorageService} from '../services/storage.service';
 import {AuthService} from '../services/auth.service';
 
 @Injectable()
-export class AuthInterceptor implements HttpInterceptor {
+export class RequestInterceptor implements HttpInterceptor {
   constructor(
     private storage: StorageService,
     private authService: AuthService,
@@ -30,6 +29,10 @@ export class AuthInterceptor implements HttpInterceptor {
             this.toast.error('X0', 'No connection with server')
             break;
           }
+          case 400: {
+            this.toast.warn('Oops', 'Looks like you tried to send some wrong data');
+            break;
+          }
           case 401: {
             this.toast.warn('Oops', 'Looks like you are unauthorized. Try to sign in');
             this.authService.updateAuthState();
@@ -38,6 +41,10 @@ export class AuthInterceptor implements HttpInterceptor {
           case 403: {
             this.toast.warn('Oops', 'Looks like you don\'t have permissions for this resource');
             this.authService.updateAuthState();
+            break;
+          }
+          case 404: {
+            this.toast.warn('Oops', 'Looks like server can\'t find item from your request');
             break;
           }
           default: this.toast.httpError(error);

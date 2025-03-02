@@ -13,11 +13,11 @@ export class GuardRepository {
   constructor(private http: HttpClient) {}
 
   entry(login: string): Observable<void> {
-    return this.http.post<void>(`${this.api}/entry`, login);
+    return this.http.post<void>(`${this.api}/entry?login=${login}`, {});
   }
 
   exit(login: string): Observable<void> {
-    return this.http.post<void>(`${this.api}/exit`, login);
+    return this.http.post<void>(`${this.api}/exit?login=${login}`, {});
   }
 
   getHistory(login: string): Observable<GuardHistory[]> {
