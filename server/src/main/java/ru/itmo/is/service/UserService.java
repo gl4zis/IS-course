@@ -25,6 +25,10 @@ public class UserService {
         throw new NotFoundException("Resident not found");
     }
 
+    public Resident getCurrentResidentOrThrow() {
+        return getResidentByLogin(getCurrentUserOrThrow().getLogin());
+    }
+
     public User getCurrentUserOrThrow() {
         String login = securityContext.getUsername();
         if (login == null) {

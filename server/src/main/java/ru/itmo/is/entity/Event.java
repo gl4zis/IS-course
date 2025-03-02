@@ -25,6 +25,7 @@ public class Event {
     @ManyToOne
     @JoinColumn(name = "resident")
     private Resident resident;
+    private Integer paymentSum;
 
     public enum Type {
         PAYMENT,

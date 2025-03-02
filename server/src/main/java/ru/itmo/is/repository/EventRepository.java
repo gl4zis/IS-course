@@ -20,10 +20,10 @@ public interface EventRepository extends CrudRepository<Event, Long> {
     List<Event> getByTypeInAndResidentLoginOrderByTimestampDesc(Collection<Event.Type> type, String resident);
 
     @Query(value = "SELECT * FROM calculate_resident_debt(:resident)", nativeQuery = true)
-    Integer calculateResidentDebt(String resident);
+    Integer calculateResidentDebt(@Param("resident") String resident);
 
     @Query(value = "SELECT * FROM get_last_payment_time(:resident)", nativeQuery = true)
-    LocalDateTime getLastPaymentTime(String resident);
+    LocalDateTime getLastPaymentTime(@Param("resident") String resident);
 
     @Query(value = "SELECT * FROM get_residents_to_eviction_by_debt()", nativeQuery = true)
     List<String> getResidentsToEvictionByDebt();

@@ -33,7 +33,7 @@ import {ActivatedRoute, Router} from '@angular/router';
   templateUrl: './inout.component.html'
 })
 export class InoutComponent implements OnInit {
-  protected searchResident: string = "";
+  searchResident: string = "";
   history: GuardHistory[] = [];
 
   constructor(
@@ -44,7 +44,6 @@ export class InoutComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    console.log(this.authService.getRole())
     if (this.authService.getRole() === Role.MANAGER) {
       this.route.queryParams.subscribe(params => {
         if (params['resident']) {
@@ -61,17 +60,20 @@ export class InoutComponent implements OnInit {
 
   findResidentHistory(): void {
     if (this.searchResident && this.searchResident.length) {
+      if (this.searchResident === this.route.snapshot.queryParamMap.get('resident')) {
+        this.loadHistory();
+      }
       Utils.changeQueryParam(this.route, this.router, { resident: this.searchResident });
     }
   }
 
-  private loadHistory() {
+  loadHistory() {
     this.guardRepository.getHistory(this.searchResident).subscribe({
       next: (resp) => this.history = resp
     });
   }
 
-  private loadSelfHistory() {
+  loadSelfHistory() {
     this.guardRepository.getSelfHistory().subscribe({
       next: (resp) => this.history = resp
     });

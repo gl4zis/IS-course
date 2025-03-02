@@ -7,6 +7,11 @@ body {
   margin-top: 50px;
 }
 
+.double-form {
+  margin-top: 50px;
+  width: 900px;
+}
+
 .center {
   display: flex;
   justify-content: center;
