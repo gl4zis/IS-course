@@ -70,9 +70,19 @@ export class NavHeaderComponent implements OnInit {
       icon: 'pi pi-file-edit'
     },
     {
+      label: 'Payment',
+      command: () => this.router.navigate(['payment']),
+      icon: 'pi pi-check-circle'
+    },
+    {
       label: 'Staff',
       command: () => this.router.navigate(['staff']),
       icon: 'pi pi-address-book'
+    },
+    {
+      label: 'Residents',
+      command: () => this.router.navigate(['residents']),
+      icon: 'pi pi-user'
     }
   ];
 

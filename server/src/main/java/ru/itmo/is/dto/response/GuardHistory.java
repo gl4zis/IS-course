@@ -9,7 +9,19 @@ import java.time.LocalDateTime;
 @Builder
 @Getter
 public class GuardHistory {
-    private String login;
-    private Event.Type type;
     private LocalDateTime timestamp;
+    private Type type;
+
+    public enum Type {
+        IN,
+        OUT;
+
+        public static Type fromEventType(Event.Type type) {
+            return switch (type) {
+                case IN -> Type.IN;
+                case OUT -> Type.OUT;
+                default -> throw new IllegalArgumentException("Invalid event type");
+            };
+        }
+    }
 }

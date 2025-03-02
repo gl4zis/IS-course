@@ -54,8 +54,7 @@ public class GuardService {
 
     private GuardHistory mapGuardEvent(Event event) {
         return GuardHistory.builder()
-                .login(event.getResident().getLogin())
-                .type(event.getType())
+                .type(GuardHistory.Type.fromEventType(event.getType()))
                 .timestamp(event.getTimestamp())
                 .build();
     }

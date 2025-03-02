@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {environment} from '../environment/environment';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
-import {GuardHistory} from '../models/guard/guard-history.model';
+import {GuardHistory} from '../models/guard-history.model';
 
 @Injectable({
   providedIn: 'root'
@@ -21,7 +21,6 @@ export class GuardRepository {
   }
 
   getHistory(login: string): Observable<GuardHistory[]> {
-    console.log(login);
     return this.http.get<GuardHistory[]>(`${this.api}/history?login=${login}`);
   }
 

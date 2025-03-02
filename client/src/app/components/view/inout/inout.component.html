@@ -1,38 +1,17 @@
 <nav-header/>
-<ng-container *ngIf="authService.getRole() === Role.GUARD">
-  <div class="form center">
-    <p-card>
-      <ng-template pTemplate="title">Register resident's IN/OUT</ng-template>
-      <div class="input-row">
-        <div class="input" style="width: 100%">
-          <p-floatLabel>
-            <input pInputText
-                   id="login"
-                   [(ngModel)]="login"/>
-            <label for="login">Username</label>
-          </p-floatLabel>
-        </div>
-      </div>
-
-      <div class="form-buttons">
-        <p-button [outlined]="true" (click)="exit()">Exit</p-button>
-        <p-button [outlined]="true" (click)="entry()">Entry</p-button>
-      </div>
-    </p-card>
-  </div>
-</ng-container>
+<inout-guard-page *ngIf="authService.getRole() === Role.GUARD"/>
 
 <ng-container *ngIf="authService.getRole() !== Role.GUARD">
   <ng-container *ngIf="authService.getRole() === Role.MANAGER">
     <div class="form center" style="margin-bottom: 50px">
       <p-card>
-        <ng-template pTemplate="title">Type login for get history</ng-template>
+        <ng-template pTemplate="title">Type login to get history</ng-template>
         <div class="input-row">
           <div class="input" style="width: 100%">
             <p-floatLabel>
               <input pInputText
                      id="resident"
-                     [(ngModel)]="residentForHistory"/>
+                     [(ngModel)]="searchResident"/>
               <label for="resident">Resident</label>
             </p-floatLabel>
           </div>
@@ -44,11 +23,13 @@
       </p-card>
     </div>
   </ng-container>
-  <ng-container *ngIf="authService.getRole() !== Role.MANAGER">
+
+  <ng-container *ngIf="authService.getRole() === Role.RESIDENT">
     <div class="center" style="margin: 20px">
       <h2>History of your IN/OUT events</h2>
     </div>
   </ng-container>
+
   <p-table [value]="history"
            styleClass="p-datatable-gridlines p-datatable-sm"
            [style]="{width: '50%'}" class="center"
