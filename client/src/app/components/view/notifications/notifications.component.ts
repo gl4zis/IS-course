@@ -4,7 +4,6 @@ import {Button} from 'primeng/button';
 import {NgForOf, NgIf} from '@angular/common';
 import {Notification} from '../../../models/notification/notification.model';
 import {NotificationRepository} from '../../../repositories/notification.repository';
-import {ToastService} from '../../../services/toast.service';
 import {Card} from 'primeng/card';
 
 @Component({

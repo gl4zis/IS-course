@@ -1,8 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {NavHeaderComponent} from '../../common/nav-header/nav-header.component';
 import {Card} from 'primeng/card';
-import {LoginReq} from '../../../models/auth/login.model';
-import { RegisterReq } from '../../../models/auth/register.model';
+import {RegisterReq} from '../../../models/auth/register.model';
 import {PrimeTemplate} from 'primeng/api';
 import {NgIf} from '@angular/common';
 import {Button} from 'primeng/button';
@@ -37,9 +36,12 @@ import {ToastService} from '../../../services/toast.service';
 })
 export class AuthorizationComponent implements OnInit {
   isSignIn = true;
-  form: LoginReq | RegisterReq = {
+  form: RegisterReq = {
     login: '',
-    password: ''
+    password: '',
+    name: '',
+    surname: '',
+    role: Role.NON_RESIDENT
   };
 
   profile?: Profile;
@@ -70,9 +72,9 @@ export class AuthorizationComponent implements OnInit {
 
   onSubmit(): void {
     if (this.isSignIn) {
-      this.authService.login(this.form!);
+      this.authService.login(this.form);
     } else {
-      this.authService.register(this.form as RegisterReq);
+      this.authService.register(this.form);
     }
     this.resetForm();
   }
@@ -114,8 +116,11 @@ export class AuthorizationComponent implements OnInit {
   private resetForm(): void {
     this.form = {
       login: '',
-      password: ''
-    }
+      password: '',
+      name: '',
+      surname: '',
+      role: Role.NON_RESIDENT
+    };
   }
 
   protected readonly Role = Role;

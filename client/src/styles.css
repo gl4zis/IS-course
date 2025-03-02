@@ -25,12 +25,18 @@ body {
 }
 
 .input {
+  width: 100%;
+
   label {
     margin-left: 10px;
     color: gray;
   }
 
   input {
+    width: 100%;
+  }
+
+  div {
     width: 100%;
   }
 

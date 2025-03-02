@@ -95,13 +95,6 @@ export class AuthService {
         });
     }
 
-    registerOther(req: RegisterReq): void {
-        this.authRepo.registerOther(req).subscribe({
-            next: () => this.toastService.success("User was successfully registered!"),
-            error: () => this.toastService.error("User was not registered(")
-        });
-    }
-
     updateAuthState(): void {
         const authState = this.isAuthorized();
         if (this.isAuthorized$.value != authState) {

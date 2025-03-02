@@ -5,9 +5,8 @@ import org.springframework.stereotype.Service;
 import ru.itmo.is.dto.request.LoginRequest;
 import ru.itmo.is.dto.request.PasswordChangeRequest;
 import ru.itmo.is.dto.request.RegisterRequest;
-import ru.itmo.is.dto.response.ProfileResponse;
 import ru.itmo.is.dto.response.OneFieldResponse;
-import ru.itmo.is.entity.dorm.Room;
+import ru.itmo.is.dto.response.ProfileResponse;
 import ru.itmo.is.entity.user.Resident;
 import ru.itmo.is.entity.user.User;
 import ru.itmo.is.exception.BadRequestException;
@@ -96,6 +95,7 @@ public class AuthService {
                 user.getSurname(),
                 user.getRole(),
                 null,
+                null,
                 null
         );
     }
@@ -106,18 +106,8 @@ public class AuthService {
                 resident.getSurname(),
                 resident.getRole(),
                 resident.getUniversity().getName(),
-                mapRoom(resident.getRoom())
-        );
-    }
-
-    private ProfileResponse.RoomResponse mapRoom(Room room) {
-        return new ProfileResponse.RoomResponse(
-                room.getDormitory().getAddress(),
-                room.getNumber(),
-                room.getType(),
-                room.getCapacity(),
-                room.getFloor(),
-                room.getCost()
+                resident.getRoom().getDormitory().getAddress(),
+                resident.getRoom().getNumber()
         );
     }
 }

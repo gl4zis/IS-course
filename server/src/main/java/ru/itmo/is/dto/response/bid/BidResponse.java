@@ -4,9 +4,9 @@ import jakarta.annotation.Nullable;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
+import ru.itmo.is.dto.response.user.UserResponse;
 import ru.itmo.is.entity.bid.Bid;
 import ru.itmo.is.entity.bid.BidFile;
-import ru.itmo.is.entity.user.User;
 
 import java.util.List;
 
@@ -30,19 +30,5 @@ public class BidResponse {
         this.type = bid.getType();
         this.attachments = bid.getFiles().stream().map(BidFile::getKey).toList();
         this.status = bid.getStatus();
-    }
-
-    @Getter
-    @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-    static class UserResponse {
-        String login;
-        String name;
-        String surname;
-
-        private UserResponse(User user) {
-            this.login = user.getLogin();
-            this.name = user.getName();
-            this.surname = user.getSurname();
-        }
     }
 }

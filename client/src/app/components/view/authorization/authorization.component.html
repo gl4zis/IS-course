@@ -9,8 +9,8 @@
       <div>Role: {{ this.profile?.role }}</div>
       <ng-container *ngIf="this.profile && this.profile.role === Role.RESIDENT">
         <div>University: {{ this.profile.university }}</div>
-        <div>Dormitory: {{ this.profile.room?.dormitory }}</div>
-        <div>Room: {{ this.profile.room?.number }}</div>
+        <div>Dormitory: {{ this.profile.dormitory }}</div>
+        <div>Room: {{ this.profile.roomNumber }}</div>
       </ng-container>
       <div class="form-buttons" style="width: 250px">
         <p-button severity="danger" size="small" (click)="authService.logout()">Logout</p-button>
@@ -58,9 +58,49 @@
         </div>
       </div>
 
-      <div class="center" style="margin-top: 30px;">
-        <p-button (click)="onSubmit()" [disabled]="!isSignIn && (login.invalid || password.invalid)">Submit</p-button>
-      </div>
+      <ng-container *ngIf="!isSignIn">
+        <div class="input-row">
+          <div class="input" style="width: 100%">
+            <p-floatLabel>
+              <input pInputText
+                     id="name"
+                     required
+                     minlength="2"
+                     [(ngModel)]="form.name"
+                     #name="ngModel"/>
+              <label for="name">Name</label>
+            </p-floatLabel>
+            <div class="error" *ngIf="!isSignIn && name.invalid && (name.touched || name.dirty)">
+              Name should have at least 2 symbols
+            </div>
+          </div>
+        </div>
+        <div class="input-row">
+          <div class="input" style="width: 100%">
+            <p-floatLabel>
+              <input pInputText
+                     id="surname"
+                     required
+                     minlength="2"
+                     [(ngModel)]="form.surname"
+                     #surname="ngModel"/>
+              <label for="surname">Surname</label>
+            </p-floatLabel>
+            <div class="error" *ngIf="!isSignIn && surname.invalid && (surname.touched || surname.dirty)">
+              Surname should have at least 2 symbols
+            </div>
+          </div>
+        </div>
+        <div class="center" style="margin-top: 30px;">
+          <p-button (click)="onSubmit()" [disabled]="!isSignIn && (login.invalid || password.invalid || name.invalid || surname.invalid)">Submit</p-button>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="isSignIn">
+        <div class="center" style="margin-top: 30px;">
+          <p-button (click)="onSubmit()" [disabled]="!isSignIn && (login.invalid || password.invalid)">Submit</p-button>
+        </div>
+      </ng-container>
     </ng-container>
   </p-card>
 </div>

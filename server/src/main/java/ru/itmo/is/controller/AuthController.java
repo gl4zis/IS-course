@@ -31,7 +31,7 @@ public class AuthController {
         return authService.login(req);
     }
 
-    @RolesAllowed({User.Role.MANAGER})
+    @RolesAllowed(User.Role.MANAGER)
     @PostMapping("/register-other")
     public void registerOther(@RequestBody @Valid RegisterRequest req) {
         authService.registerOther(req);

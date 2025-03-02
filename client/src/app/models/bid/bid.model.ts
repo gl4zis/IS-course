@@ -1,6 +1,6 @@
-import {User} from './user.model';
 import {BidType} from './bid-type.model';
 import {BidStatus} from './bid-status.model';
+import {User} from '../user/user.model';
 
 export interface Bid {
   number: number;
