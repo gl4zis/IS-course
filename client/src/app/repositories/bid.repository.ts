@@ -1,12 +1,9 @@
 import {Injectable} from '@angular/core';
 import {environment} from '../environment/environment';
 import {HttpClient} from '@angular/common/http';
-import {OccupationRequest} from '../models/bid/request/occupation.request';
 import {Observable} from 'rxjs';
 import {Bid} from '../models/bid/bid.model';
-import {BidRequest} from '../models/bid/request/bid.request';
-import {DepartureRequest} from '../models/bid/request/departure.request';
-import {RoomChangeRequest} from '../models/bid/request/room-change.request';
+import {BidRequest, DepartureRequest, OccupationRequest, RoomChangeRequest} from '../models/bid/bid.request';
 
 @Injectable({
   providedIn: 'root'
@@ -26,6 +23,14 @@ export class BidRepository {
 
   getInProcess(): Observable<Bid[]> {
     return this.http.get<Bid[]>(`${this.api}/in-process`);
+  }
+
+  getPending(): Observable<Bid[]> {
+    return this.http.get<Bid[]>(`${this.api}/pending`);
+  }
+
+  getArchived(): Observable<Bid[]> {
+    return this.http.get<Bid[]>(`${this.api}/archived`);
   }
 
   createOccupation(req: OccupationRequest): Observable<void> {

@@ -2,12 +2,6 @@
   flex-direction: column;
 }
 
-.scrollable {
-  display: flex;
-  flex-direction: column;
-  overflow-y: auto;
-}
-
 .notification {
   width: 60%;
   margin-left: auto;

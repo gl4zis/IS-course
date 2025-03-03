@@ -1,7 +1,5 @@
 import {Component, OnInit} from '@angular/core';
 import {NavHeaderComponent} from '../../common/nav-header/nav-header.component';
-import {Button} from 'primeng/button';
-import {NgIf} from '@angular/common';
 import {PrimeTemplate} from 'primeng/api';
 import {TableModule} from 'primeng/table';
 import {Role} from '../../../models/auth/role.model';
@@ -16,8 +14,6 @@ import {Utils} from '../../../services/utils';
   templateUrl: './residents.component.html',
   imports: [
     NavHeaderComponent,
-    Button,
-    NgIf,
     PrimeTemplate,
     TableModule,
     RouterLink

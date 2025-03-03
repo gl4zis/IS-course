@@ -5,6 +5,7 @@ import {NgForOf, NgIf} from '@angular/common';
 import {Notification} from '../../../models/notification/notification.model';
 import {NotificationRepository} from '../../../repositories/notification.repository';
 import {Card} from 'primeng/card';
+import {RouterLink} from '@angular/router';
 
 @Component({
   selector: 'notifications-view',
@@ -14,7 +15,8 @@ import {Card} from 'primeng/card';
     Button,
     NgForOf,
     NgIf,
-    Card
+    Card,
+    RouterLink
   ],
   templateUrl: './notifications.component.html',
   styleUrl: './notifications.component.css'

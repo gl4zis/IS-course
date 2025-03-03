@@ -1,0 +1,23 @@
+<div class="card-animation">
+  <p-card (click)="open.emit(number)" [style]="{width: '100%'}">
+    <div class="bid-card">
+      <div>
+        <div>Заявка номер #{{ number }} на {{ typeMap[type] }}</div>
+        <div *ngIf="sender">От
+          <a *ngIf="isSenderResident()"
+             [routerLink]="['/residents']"
+             [queryParams]="{ resident: sender.login }"
+          >
+            {{ sender.name }} {{ sender.surname }}
+          </a>
+          <ng-container *ngIf="!isSenderResident()">
+            {{ sender.name }} {{ sender.surname }} (нерезидент &#64;{{ sender.login }})
+          </ng-container>
+        </div>
+      </div>
+      <div>
+        {{ status }}
+      </div>
+    </div>
+  </p-card>
+</div>

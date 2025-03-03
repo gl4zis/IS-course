@@ -41,8 +41,18 @@ public class BidService {
     private final ResidentRepository residentRepository;
 
     public List<BidResponse> getInProcessBids() {
-        List<Bid> newBids = bidRepository.getByStatus(Bid.Status.IN_PROCESS);
-        return newBids.stream().map(this::mapBid).toList();
+        List<Bid> bids = bidRepository.getByStatusIn(List.of(Bid.Status.IN_PROCESS));
+        return bids.stream().map(this::mapBid).toList();
+    }
+
+    public List<BidResponse> getPendingBids() {
+        List<Bid> bids = bidRepository.getByStatusIn(List.of(Bid.Status.PENDING_REVISION));
+        return bids.stream().map(this::mapBid).toList();
+    }
+
+    public List<BidResponse> getArchivedBids() {
+        List<Bid> bids = bidRepository.getByStatusIn(List.of(Bid.Status.ACCEPTED, Bid.Status.DENIED));
+        return bids.stream().map(this::mapBid).toList();
     }
 
     public List<BidResponse> getSelfBids() {
@@ -58,10 +68,10 @@ public class BidService {
         }
 
         User user = userService.getCurrentUserOrThrow();
-        if (user.getRole() != User.Role.MANAGER || !bidO.get().getSender().equals(user)) {
-            throw new ForbiddenException("You are not allowed to get bid by this user");
+        if (user.getRole() == User.Role.MANAGER || bidO.get().getSender().equals(user)) {
+            return mapBid(bidO.get());
         }
-        return mapBid(bidO.get());
+        throw new ForbiddenException("You are not allowed to get bid by this user");
     }
 
     public void denyBid(Long id) {

@@ -32,6 +32,24 @@ public class BidController {
         return bidService.getBid(id);
     }
 
+    @RolesAllowed(User.Role.MANAGER)
+    @GetMapping("/in-process")
+    public List<BidResponse> getInProcessBids() {
+        return bidService.getInProcessBids();
+    }
+
+    @RolesAllowed(User.Role.MANAGER)
+    @GetMapping("/pending")
+    public List<BidResponse> getPendingBids() {
+        return bidService.getPendingBids();
+    }
+
+    @RolesAllowed(User.Role.MANAGER)
+    @GetMapping("/archived")
+    public List<BidResponse> getArchivedBids() {
+        return bidService.getArchivedBids();
+    }
+
     @RolesAllowed(User.Role.NON_RESIDENT)
     @PostMapping("/occupation")
     public void createOccupationBid(@RequestBody @Valid OccupationRequest req) {
@@ -90,11 +108,5 @@ public class BidController {
     @PostMapping("/{id}/accept")
     public void acceptBid(@PathVariable("id") long id) {
         bidService.acceptBid(id);
-    }
-
-    @RolesAllowed(User.Role.MANAGER)
-    @GetMapping("/in-process")
-    public List<BidResponse> getInProcessBids() {
-        return bidService.getInProcessBids();
     }
 }

@@ -61,10 +61,19 @@ public class UserService {
                 .map(resident -> {
                     int debt = eventRepository.calculateResidentDebt(resident.getLogin());
                     Event lastInOutEvent = eventRepository.getLastInOutEvent(resident.getLogin());
-                    LocalDateTime lastCameOut = lastInOutEvent.getType() == Event.Type.IN ?
-                            null : lastInOutEvent.getTimestamp();
-                    EvictionResponse.Reason evictionReason = toEvictionByDebtResidents.contains(resident.getLogin()) ?
-                            EvictionResponse.Reason.NON_PAYMENT : null;
+
+                    LocalDateTime lastCameOut = null;
+                    EvictionResponse.Reason evictionReason = null;
+                    if (lastInOutEvent.getType() == Event.Type.OUT) {
+                        lastCameOut = lastInOutEvent.getTimestamp();
+                        if (LocalDateTime.now().minusDays(30).isAfter(lastCameOut)) {
+                            evictionReason = EvictionResponse.Reason.NON_RESIDENCE;
+                        }
+                    }
+                    if (toEvictionByDebtResidents.contains(resident.getLogin())) {
+                        evictionReason = EvictionResponse.Reason.NON_PAYMENT;
+                    }
+
                     return new ResidentResponse(
                             resident,
                             debt,

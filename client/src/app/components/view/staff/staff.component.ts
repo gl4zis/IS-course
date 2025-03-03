@@ -12,9 +12,7 @@ import {FloatLabel} from 'primeng/floatlabel';
 import {InputText} from 'primeng/inputtext';
 import {Password} from 'primeng/password';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {Card} from 'primeng/card';
 import {RegisterReq} from '../../../models/auth/register.model';
-import {SelectButton} from 'primeng/selectbutton';
 import {AuthRepository} from '../../../repositories/auth.repository';
 import {Select} from 'primeng/select';
 import {Dialog} from 'primeng/dialog';
@@ -33,9 +31,7 @@ import {Dialog} from 'primeng/dialog';
     InputText,
     Password,
     ReactiveFormsModule,
-    Card,
     FormsModule,
-    SelectButton,
     Select,
     Dialog
   ]

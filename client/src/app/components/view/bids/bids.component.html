@@ -1,1 +1,56 @@
 <nav-header/>
+
+<div class="page">
+  <ng-container *ngIf="authService.getRole() === Role.MANAGER">
+    <div class="scrollable" style="width: 100%">
+    <p-tabs value="0" (valueChange)="onTabChange($event)">
+      <p-tablist>
+        <p-tab value="0">In process bids</p-tab>
+        <p-tab value="1">Pending bids</p-tab>
+        <p-tab value="2">Archived bids</p-tab>
+      </p-tablist>
+      <p-tabpanels>
+        <p-tabpanel value="0">
+          <bid-card *ngFor="let bid of inProcessBids"
+                    [number]="bid.number"
+                    [sender]="bid.sender"
+                    [type]="bid.type"
+                    [status]="bid.status"
+                    (open)="onBidClick($event)"
+          />
+        </p-tabpanel>
+        <p-tabpanel value="1">
+          <bid-card *ngFor="let bid of pendingBids"
+                    [number]="bid.number"
+                    [sender]="bid.sender"
+                    [type]="bid.type"
+                    [status]="bid.status"
+                    (open)="onBidClick($event)"
+          />
+        </p-tabpanel>
+        <p-tabpanel value="2">
+          <bid-card *ngFor="let bid of archivedBids"
+                    [number]="bid.number"
+                    [sender]="bid.sender"
+                    [type]="bid.type"
+                    [status]="bid.status"
+                    (open)="onBidClick($event)"
+          />
+        </p-tabpanel>
+      </p-tabpanels>
+    </p-tabs>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="authService.getRole() !== Role.MANAGER">
+
+  </ng-container>
+</div>
+
+<p-dialog header="Заявка #{{ viewBid?.number }}" [modal]="true" [(visible)]="viewOpened" (onHide)="closeView()">
+
+  <div class="form-buttons">
+    <p-button severity="danger" (click)="denyBid()">Deny</p-button>
+    <p-button (click)="acceptBid()">Accept</p-button>
+  </div>
+</p-dialog>
