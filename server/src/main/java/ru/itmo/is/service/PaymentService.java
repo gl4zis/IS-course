@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.itmo.is.dto.request.PaymentRequest;
 import ru.itmo.is.dto.response.PaymentResponse;
-import ru.itmo.is.dto.response.EvictionResponse;
 import ru.itmo.is.entity.Event;
 import ru.itmo.is.entity.user.Resident;
 import ru.itmo.is.exception.BadRequestException;
@@ -47,11 +46,6 @@ public class PaymentService {
         event.setRoom(resident.getRoom());
         event.setPaymentSum(req.getSum());
         eventRepository.save(event);
-    }
-
-    public List<EvictionResponse> getEvictionsByPayment() {
-        List<String> residents = eventRepository.getResidentsToEvictionByDebt();
-        return residents.stream().map(r -> new EvictionResponse(r, EvictionResponse.Reason.NON_PAYMENT)).toList();
     }
 
     private PaymentResponse.History mapHistory(Event event) {

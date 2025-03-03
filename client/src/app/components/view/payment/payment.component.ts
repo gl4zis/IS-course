@@ -74,14 +74,20 @@ export class PaymentComponent implements OnInit {
 
   loadData(): void {
     this.paymentRepository.getPaymentInfo(this.searchResident).subscribe({
-      next: (resp) => this.paymentInfo = resp
+      next: (resp) => {
+        this.paymentInfo = resp;
+        this.paymentInfo.history = this.paymentInfo.history.map(h => ({...h, timestamp: new Date(h.timestamp)}));
+      }
     });
 
   }
 
   loadSelfData(): void {
     this.paymentRepository.getSelfPaymentInfo().subscribe({
-      next: (resp) => this.paymentInfo = resp
+      next: (resp) => {
+        this.paymentInfo = resp;
+        this.paymentInfo.history = this.paymentInfo.history.map(h => ({...h, timestamp: new Date(h.timestamp)}));
+      }
     });
   }
 
@@ -94,4 +100,5 @@ export class PaymentComponent implements OnInit {
   }
 
   protected readonly Role = Role;
+  protected readonly Utils = Utils;
 }

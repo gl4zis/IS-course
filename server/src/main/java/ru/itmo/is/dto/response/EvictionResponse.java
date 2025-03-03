@@ -5,6 +5,8 @@ public record EvictionResponse(String resident, Reason reason) {
     public enum Reason {
         NON_PAYMENT,
         NON_RESIDENCE,
-        RULE_VIOLATION
+        RULE_VIOLATION,
+        VOLUNTARILY,
+        EXPULSION
     }
 }

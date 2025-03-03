@@ -1,1 +1,38 @@
 <nav-header/>
+
+<p-table [value]="residents"
+         styleClass="p-datatable-gridlines p-datatable-sm"
+         [style]="{width: '90%', 'margin-top': '30px'}" class="center"
+         [paginator]="true" [rows]="15"
+>
+  <ng-template pTemplate="header">
+    <tr>
+      <th>Login</th>
+      <th>Name</th>
+      <th>Surname</th>
+      <th>University</th>
+      <th>Dormitory</th>
+      <th>Room number</th>
+      <th>Debt</th>
+      <th>Last came out</th>
+      <th>To eviction</th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-resident>
+    <tr>
+      <td>&#64;{{ resident.login }}</td>
+      <td>{{ resident.name }}</td>
+      <td>{{ resident.surname }}</td>
+      <td>{{ resident.university }}</td>
+      <td>{{ resident.dormitory }}</td>
+      <td>{{ resident.roomNumber }}</td>
+      <td><a [routerLink]="['/payment']" [queryParams]="{ resident: resident.login }">
+        {{ resident.debt }}
+      </a></td>
+      <td><a [routerLink]="['/inout']" [queryParams]="{ resident: resident.login }">
+        {{ Utils.formatDate(resident.lastCameOut) || 'Now inside' }}
+      </a></td>
+      <td>{{ resident.evictionReason || '' }}</td>
+    </tr>
+  </ng-template>
+</p-table>

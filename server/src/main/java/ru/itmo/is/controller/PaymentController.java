@@ -4,12 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.itmo.is.dto.request.PaymentRequest;
 import ru.itmo.is.dto.response.PaymentResponse;
-import ru.itmo.is.dto.response.EvictionResponse;
 import ru.itmo.is.entity.user.User;
 import ru.itmo.is.security.RolesAllowed;
 import ru.itmo.is.service.PaymentService;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/payment")
@@ -33,11 +30,5 @@ public class PaymentController {
     @PostMapping("/pay")
     public void pay(@RequestBody PaymentRequest req) {
         paymentService.currentUserPay(req);
-    }
-
-    @RolesAllowed(User.Role.MANAGER)
-    @GetMapping("/eviction")
-    public List<EvictionResponse> getEvictionsByPayment() {
-        return paymentService.getEvictionsByPayment();
     }
 }

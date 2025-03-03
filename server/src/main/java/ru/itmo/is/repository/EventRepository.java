@@ -9,6 +9,7 @@ import ru.itmo.is.entity.Event;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 @Repository
 public interface EventRepository extends CrudRepository<Event, Long> {
@@ -26,5 +27,5 @@ public interface EventRepository extends CrudRepository<Event, Long> {
     LocalDateTime getLastPaymentTime(@Param("resident") String resident);
 
     @Query(value = "SELECT * FROM get_residents_to_eviction_by_debt()", nativeQuery = true)
-    List<String> getResidentsToEvictionByDebt();
+    Set<String> getResidentsToEvictionByDebt();
 }
