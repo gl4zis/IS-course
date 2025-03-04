@@ -1,21 +1,12 @@
-import {RoomType} from '../room/room.model';
+import {DepartureData, OccupationData, RoomChangeData} from './bid.model';
 
 export interface BidRequest {
   text: string;
-  attachments: string[];
+  attachmentKeys: string[];
 }
 
-export interface OccupationRequest extends BidRequest {
-  universityId: number;
-  dormitoryId: number;
-}
+export interface OccupationRequest extends BidRequest, OccupationData {}
 
-export interface DepartureRequest extends BidRequest {
-  dayFrom: Date;
-  dayTo: Date;
-}
+export interface DepartureRequest extends BidRequest, DepartureData {}
 
-export interface RoomChangeRequest extends BidRequest {
-  roomToId?: number;
-  roomPreferType?: RoomType;
-}
+export interface RoomChangeRequest extends BidRequest, RoomChangeData {}

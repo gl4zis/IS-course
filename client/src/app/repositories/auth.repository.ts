@@ -5,7 +5,7 @@ import {LoginReq} from '../models/auth/login.model';
 import {Observable} from 'rxjs';
 import {RegisterReq} from '../models/auth/register.model';
 import {PasswordChangeReq} from '../models/auth/password-change.request';
-import {OneFieldResponse} from '../models/one-field.response';
+import {OneFieldModel} from '../models/one-field.model';
 import {Profile} from '../models/auth/profile.model';
 
 @Injectable({
@@ -16,12 +16,12 @@ export class AuthRepository {
 
   constructor(private http: HttpClient) {}
 
-  register(req: RegisterReq): Observable<OneFieldResponse<string>> {
-    return this.http.post<OneFieldResponse<string>>(`${this.api}/register`, req);
+  register(req: RegisterReq): Observable<OneFieldModel<string>> {
+    return this.http.post<OneFieldModel<string>>(`${this.api}/register`, req);
   }
 
-  login(req: LoginReq): Observable<OneFieldResponse<string>> {
-    return this.http.post<OneFieldResponse<string>>(`${this.api}/login`, req);
+  login(req: LoginReq): Observable<OneFieldModel<string>> {
+    return this.http.post<OneFieldModel<string>>(`${this.api}/login`, req);
   }
 
   registerOther(req: RegisterReq): Observable<void> {

@@ -14,11 +14,11 @@ import java.util.Set;
 @Repository
 public interface EventRepository extends CrudRepository<Event, Long> {
     @Query(value = "SELECT e FROM Event e " +
-                    "WHERE e.resident.login = :resident AND (e.type = 'IN' OR e.type = 'OUT')" +
+                    "WHERE e.usr.login = :resident AND (e.type = 'IN' OR e.type = 'OUT')" +
                     "ORDER BY e.timestamp DESC LIMIT 1")
     Event getLastInOutEvent(@Param("resident") String resident);
 
-    List<Event> getByTypeInAndResidentLoginOrderByTimestampDesc(Collection<Event.Type> type, String resident);
+    List<Event> getByTypeInAndUsrLoginOrderByTimestampDesc(Collection<Event.Type> type, String resident);
 
     @Query(value = "SELECT * FROM calculate_resident_debt(:resident)", nativeQuery = true)
     Integer calculateResidentDebt(@Param("resident") String resident);

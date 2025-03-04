@@ -17,18 +17,33 @@ public class BidResponse {
     UserResponse sender;
     @Nullable
     UserResponse manager;
+    @Nullable
+    String comment;
     String text;
     Bid.Type type;
-    List<String> attachments;
+    List<Attachment> attachments;
     Bid.Status status;
 
     public BidResponse(Bid bid) {
         this.number = bid.getId();
         this.sender = new UserResponse(bid.getSender());
         this.manager = bid.getManager() == null ? null : new UserResponse(bid.getManager());
+        this.comment = bid.getComment();
         this.text = bid.getText();
         this.type = bid.getType();
-        this.attachments = bid.getFiles().stream().map(BidFile::getKey).toList();
+        this.attachments = bid.getFiles().stream().map(Attachment::new).toList();
         this.status = bid.getStatus();
+    }
+
+    @Getter
+    @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+    static class Attachment {
+        String filename;
+        String downloadKey;
+
+        private Attachment(BidFile bidFile) {
+            this.filename = bidFile.getName();
+            this.downloadKey = bidFile.getKey();
+        }
     }
 }

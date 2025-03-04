@@ -17,7 +17,7 @@ import java.nio.file.Paths;
 
 @Component
 public class FileStorage {
-    private final static int MAX_KEY_GEN_ATTEMPTS = 100;
+    private final static int MAX_KEY_GEN_ATTEMPTS = 10;
     @Value("${file.storage.dir}")
     private String storageDir;
 
@@ -36,13 +36,13 @@ public class FileStorage {
     }
 
     public FileResponse get(FileRecord record) {
-        Path path = Paths.get(storageDir, record.key());
+        Path path = Paths.get(storageDir, record.getKey());
         Resource resource = new FileSystemResource(path);
         if (!resource.exists() || !resource.isReadable()) {
             throw new NotFoundException("File not found");
         }
 
-        return new FileResponse(record.name(), resource);
+        return new FileResponse(record.getName(), resource);
     }
 
     private String generateKey() {

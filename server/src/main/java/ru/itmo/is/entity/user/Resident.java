@@ -1,13 +1,12 @@
 package ru.itmo.is.entity.user;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.Setter;
-import ru.itmo.is.entity.Event;
 import ru.itmo.is.entity.dorm.Room;
 import ru.itmo.is.entity.dorm.University;
-
-import java.util.List;
 
 @Entity
 @Getter
@@ -19,9 +18,6 @@ public class Resident extends User {
     @ManyToOne
     @JoinColumn(name = "room_id")
     private Room room;
-    private boolean evicted = false;
-    @OneToMany(mappedBy = "resident", fetch = FetchType.LAZY)
-    private List<Event> events;
 
     public static Resident of(User user) {
         Resident resident = new Resident();

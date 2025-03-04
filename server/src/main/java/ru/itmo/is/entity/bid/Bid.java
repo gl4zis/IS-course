@@ -31,6 +31,7 @@ public class Bid {
     @ManyToOne
     @JoinColumn(name = "manager")
     private User manager;
+    private String comment;
     @OneToOne
     @JoinColumn(name = "event_id", referencedColumnName = "id")
     private Event event;

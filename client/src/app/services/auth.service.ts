@@ -8,7 +8,7 @@ import {jwtDecode} from 'jwt-decode';
 import {LoginReq} from '../models/auth/login.model';
 import {Role} from '../models/auth/role.model';
 import {RegisterReq} from '../models/auth/register.model';
-import {OneFieldResponse} from '../models/one-field.response';
+import {OneFieldModel} from '../models/one-field.model';
 import {Router} from '@angular/router';
 
 @Injectable({
@@ -77,7 +77,7 @@ export class AuthService {
 
     login(req: LoginReq): void {
         this.authRepo.login(req).subscribe({
-            next: (resp: OneFieldResponse<string>) => {
+            next: (resp: OneFieldModel<string>) => {
                 this.storage.saveToken(resp.data);
                 this.updateAuthState();
             },
@@ -87,7 +87,7 @@ export class AuthService {
 
     register(req: RegisterReq): void {
         this.authRepo.register(req).subscribe({
-            next: (resp: OneFieldResponse<string>) => {
+            next: (resp: OneFieldModel<string>) => {
                 this.storage.saveToken(resp.data)
                 this.updateAuthState();
             },

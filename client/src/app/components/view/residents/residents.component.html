@@ -64,7 +64,7 @@
         {{ resident.debt }}
       </a></td>
       <td><a [routerLink]="['/inout']" [queryParams]="{ resident: resident.login }">
-        {{ Utils.formatDate(resident.lastCameOut) || 'Now inside' }}
+        {{ Utils.formatDateTime(resident.lastCameOut) || 'Now inside' }}
       </a></td>
     </tr>
   </ng-template>

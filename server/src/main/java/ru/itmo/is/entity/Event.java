@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import ru.itmo.is.entity.dorm.Room;
-import ru.itmo.is.entity.user.Resident;
+import ru.itmo.is.entity.user.User;
 
 import java.time.LocalDateTime;
 
@@ -23,8 +23,8 @@ public class Event {
     @JoinColumn(name = "room_id")
     private Room room;
     @ManyToOne
-    @JoinColumn(name = "resident")
-    private Resident resident;
+    @JoinColumn(name = "usr")
+    private User usr;
     private Integer paymentSum;
 
     public enum Type {

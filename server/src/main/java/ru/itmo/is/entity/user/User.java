@@ -3,6 +3,7 @@ package ru.itmo.is.entity.user;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import ru.itmo.is.entity.Event;
 import ru.itmo.is.entity.bid.Bid;
 
 import java.util.List;
@@ -25,6 +26,18 @@ public class User {
     private List<Bid> sendBids;
     @OneToMany(mappedBy = "manager", fetch = FetchType.LAZY)
     private List<Bid> managedBids;
+    @OneToMany(mappedBy = "usr", fetch = FetchType.LAZY)
+    private List<Event> events;
+
+    public static User nonResident(Resident resident) {
+        User user = new User();
+        user.setLogin(resident.getLogin());
+        user.setPassword(resident.getPassword());
+        user.setName(resident.getName());
+        user.setSurname(resident.getSurname());
+        user.setRole(Role.NON_RESIDENT);
+        return user;
+    }
 
     @Override
     public int hashCode() {

@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.itmo.is.dto.request.LoginRequest;
 import ru.itmo.is.dto.request.PasswordChangeRequest;
 import ru.itmo.is.dto.request.RegisterRequest;
-import ru.itmo.is.dto.response.OneFieldResponse;
+import ru.itmo.is.dto.OneFieldDto;
 import ru.itmo.is.dto.response.ProfileResponse;
 import ru.itmo.is.entity.user.Resident;
 import ru.itmo.is.entity.user.User;
@@ -29,7 +29,7 @@ public class AuthService {
     private final SecurityContext securityContext;
     private final UserService userService;
 
-    public OneFieldResponse<String> register(RegisterRequest req) {
+    public OneFieldDto<String> register(RegisterRequest req) {
         return switch (req.getRole()) {
             case MANAGER -> registerManager(mapper.toUser(req));
             case NON_RESIDENT -> saveAndGetToken(mapper.toUser(req));
@@ -37,12 +37,12 @@ public class AuthService {
         };
     }
 
-    public OneFieldResponse<String> login(LoginRequest req) {
+    public OneFieldDto<String> login(LoginRequest req) {
         Optional<User> userO = userRepository.findById(req.getLogin());
         if (userO.isEmpty() || !PasswordManager.matches(req.getPassword(), userO.get().getPassword())) {
             throw new UnauthorizedException("Invalid credentials");
         }
-        return new OneFieldResponse<>(jwtManager.createToken(userO.get()));
+        return new OneFieldDto<>(jwtManager.createToken(userO.get()));
     }
 
     public void registerOther(RegisterRequest req) {
@@ -66,19 +66,19 @@ public class AuthService {
         return mapToProfile(userService.getCurrentUserOrThrow());
     }
 
-    private OneFieldResponse<String> registerManager(User user) {
+    private OneFieldDto<String> registerManager(User user) {
         if (isManagerExists()) {
             throw new UnauthorizedException("Invalid role");
         }
         return saveAndGetToken(user);
     }
 
-    private OneFieldResponse<String> saveAndGetToken(User user) {
+    private OneFieldDto<String> saveAndGetToken(User user) {
         if (userRepository.existsByLogin(user.getLogin())) {
             throw new ConflictException("User already exists");
         }
         userRepository.save(user);
-        return new OneFieldResponse<>(jwtManager.createToken(user));
+        return new OneFieldDto<>(jwtManager.createToken(user));
     }
 
     private boolean isManagerExists() {

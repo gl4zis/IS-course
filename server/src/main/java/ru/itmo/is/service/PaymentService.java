@@ -26,7 +26,7 @@ public class PaymentService {
     public PaymentResponse getPaymentInfo(String login) {
         Resident resident = userService.getResidentByLogin(login); // To make sure that this is resident
         List<Event> paymentEvents = eventRepository
-                .getByTypeInAndResidentLoginOrderByTimestampDesc(List.of(Event.Type.PAYMENT), resident.getLogin());
+                .getByTypeInAndUsrLoginOrderByTimestampDesc(List.of(Event.Type.PAYMENT), resident.getLogin());
         List<PaymentResponse.History> history = paymentEvents.stream().map(this::mapHistory).toList();
         Integer debt = eventRepository.calculateResidentDebt(resident.getLogin());
         LocalDateTime lastPaymentTime = eventRepository.getLastPaymentTime(resident.getLogin());
@@ -42,7 +42,7 @@ public class PaymentService {
         }
         var event = new Event();
         event.setType(Event.Type.PAYMENT);
-        event.setResident(resident);
+        event.setUsr(resident);
         event.setRoom(resident.getRoom());
         event.setPaymentSum(req.getSum());
         eventRepository.save(event);

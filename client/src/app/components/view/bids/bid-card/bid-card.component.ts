@@ -3,8 +3,9 @@ import {User} from '../../../../models/user/user.model';
 import {Card} from 'primeng/card';
 import {NgIf} from '@angular/common';
 import {RouterLink} from '@angular/router';
-import {Resident} from '../../../../models/user/resident.model'
-import {BidStatus, BidType} from '../../../../models/bid/bid.model';
+import {BID_STATUS_COLOR_MAP, BID_TYPE_MAP, BidStatus, BidType} from '../../../../models/bid/bid.model';
+import {Utils} from '../../../../services/utils';
+import {Role} from '../../../../models/auth/role.model';
 
 @Component({
   selector: 'bid-card',
@@ -18,21 +19,16 @@ import {BidStatus, BidType} from '../../../../models/bid/bid.model';
   ]
 })
 export class BidCardComponent {
-  protected readonly typeMap = {
-    [BidType.OCCUPATION]: 'заселение',
-    [BidType.EVICTION]: 'выселение',
-    [BidType.DEPARTURE]: 'отъезд',
-    [BidType.ROOM_CHANGE]: 'смену комнаты'
-  };
-
   @Input() number!: number;
   @Input() sender?: User;
+  @Input() manager?: User;
   @Input() type!: BidType;
   @Input() status!: BidStatus;
 
   @Output() open = new EventEmitter<number>();
 
-  isSenderResident(): boolean {
-    return (this.sender as Resident).university !== undefined;
-  }
+  protected readonly Utils = Utils;
+  protected readonly Role = Role;
+  protected readonly BID_TYPE_MAP = BID_TYPE_MAP;
+  protected readonly BID_STATUS_COLOR_MAP = BID_STATUS_COLOR_MAP;
 }

@@ -14,6 +14,7 @@
           <bid-card *ngFor="let bid of inProcessBids"
                     [number]="bid.number"
                     [sender]="bid.sender"
+                    [manager]="bid.manager"
                     [type]="bid.type"
                     [status]="bid.status"
                     (open)="onBidClick($event)"
@@ -23,6 +24,7 @@
           <bid-card *ngFor="let bid of pendingBids"
                     [number]="bid.number"
                     [sender]="bid.sender"
+                    [manager]="bid.manager"
                     [type]="bid.type"
                     [status]="bid.status"
                     (open)="onBidClick($event)"
@@ -32,6 +34,7 @@
           <bid-card *ngFor="let bid of archivedBids"
                     [number]="bid.number"
                     [sender]="bid.sender"
+                    [manager]="bid.manager"
                     [type]="bid.type"
                     [status]="bid.status"
                     (open)="onBidClick($event)"
@@ -47,8 +50,107 @@
   </ng-container>
 </div>
 
-<p-dialog header="Заявка #{{ viewBid?.number }}" [modal]="true" [(visible)]="viewOpened" (onHide)="closeView()">
+<ng-container *ngIf="viewBid">
+  <p-dialog [modal]="true" [(visible)]="viewOpened"
+            (onHide)="closeView()" [style]="{ width: '600px' }">
+
+    <ng-template pTemplate="header">
+      <div class="space-between" style="width: 80%">
+        <div style="font-size: 16pt"><b>Заявка #{{ viewBid.number }} на {{ BID_TYPE_MAP[viewBid.type] }}</b></div>
+        <div [style]="{ color: BID_STATUS_COLOR_MAP[viewBid.status] }"><b>{{ viewBid.status }}</b></div>
+      </div>
+    </ng-template>
+
+    <div class="input-row">
+      <div class="input" (mousedown)="redirectToSender()" style="margin-right: 20px">
+        <label for="sender">Заявитель</label>
+        <input pInputText id="sender"
+               [value]="viewBid.sender.name + ' ' + viewBid.sender.surname"
+               readonly/>
+      </div>
+      <div class="input">
+        <label for="manager">Обработчик</label>
+        <input pInputText id="manager"
+               [value]="viewBid.manager ? viewBid.manager?.name + ' ' + viewBid.manager?.surname : ''"
+               readonly/>
+      </div>
+    </div>
+
+    <div class="input-row">
+      <textarea readonly pTextarea style="width: 100%; height: 150px; resize: none">{{ viewBid.text }}</textarea>
+    </div>
+
+    <div class="input-row">
+      <ng-container *ngIf="occupationData">
+        <div class="input" style="margin-right: 20px">
+          <label for="university">Университет</label>
+          <input pInputText id="university"
+                 [value]="occupationData.university.name"
+                 readonly/>
+        </div>
+        <div class="input">
+          <label for="dormitory">Общежитие</label>
+          <input pInputText id="dormitory"
+                 [value]="occupationData.dormitory.address"
+                 readonly/>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="departureData">
+        <div class="input" style="margin-right: 20px">
+          <label for="from">С</label>
+          <input pInputText id="from"
+                 [value]="Utils.formatDate(departureData.dayFrom)"
+                 readonly/>
+        </div>
+        <div class="input">
+          <label for="to">По</label>
+          <input pInputText id="to"
+                 [value]="Utils.formatDate(departureData.dayTo)"
+                 readonly/>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="roomChangeData">
+        <div class="input" style="margin-right: 20px">
+          <label for="roomNumber">Номер комнаты</label>
+          <input pInputText id="roomNumber"
+                 [value]="roomChangeData.roomTo ? roomChangeData.roomTo.number : ''"
+                 readonly/>
+        </div>
+        <div class="input">
+          <label for="preferType">Предпочтительный тип</label>
+          <input pInputText id="preferType"
+                 [value]="roomChangeData.roomPreferType ? localizeRoomType(roomChangeData.roomPreferType) : ''"
+                 readonly/>
+        </div>
+      </ng-container>
+    </div>
+
+    <div class="input-row" *ngIf="viewBid.attachments.length">
+      Вложения
+      <ul>
+        <li *ngFor="let attachment of viewBid.attachments">
+          <a [href]="fileRepository.createDownloadLink(attachment.downloadKey)">{{ attachment.filename }}</a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="form-buttons">
+      <p-button severity="danger" (click)="denyBid()">Deny</p-button>
+      <p-button (click)="acceptBid()">Accept</p-button>
+      <p-button severity="secondary" (click)="pendBid()">Pend revisions</p-button>
+    </div>
+  </p-dialog>
+</ng-container>
+
+<p-dialog header="Оставьте сообщение заявителю" [modal]="true" [visible]="commentDialogOpened" [closable]="false">
+
+  <div class="input-row">
+    <textarea pTextarea style="width: 500px; height: 150px; resize: none" [(ngModel)]="comment"></textarea>
+  </div>
 
   <div class="form-buttons">
+    <p-button (click)="saveComment()">OK</p-button>
   </div>
 </p-dialog>

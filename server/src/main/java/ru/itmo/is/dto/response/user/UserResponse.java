@@ -11,10 +11,12 @@ public class UserResponse {
     String login;
     String name;
     String surname;
+    User.Role role;
 
     public UserResponse(User user) {
         this.login = user.getLogin();
         this.name = user.getName();
         this.surname = user.getSurname();
+        this.role = user.getRole();
     }
 }

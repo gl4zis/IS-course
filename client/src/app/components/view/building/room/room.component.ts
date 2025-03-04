@@ -12,7 +12,7 @@ import {MultiSelect} from 'primeng/multiselect';
 import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import {ToastService} from '../../../../services/toast.service';
 import {Utils} from '../../../../services/utils';
-import {Room, RoomType} from '../../../../models/room/room.model';
+import {Room, ROOM_TYPE_OPTIONS, RoomType} from '../../../../models/room/room.model';
 import {RoomRepository} from '../../../../repositories/room.repository';
 import {RoomRequest} from '../../../../models/room/room.request';
 import {DormitoryRepository} from '../../../../repositories/dormitory.repository';
@@ -60,7 +60,6 @@ export class RoomComponent implements OnInit, AfterViewInit {
 
   viewOpened = false;
   dormitoryOptions: Dormitory[] = [];
-  typeOptions = [{id: RoomType.AISLE, name: 'Коридорка'}, {id: RoomType.BLOCK, name: 'Блок'}];
   capacityOptions = [2, 3];
   editingForm: RoomRequest = {
     dormitoryId: 1,
@@ -158,4 +157,6 @@ export class RoomComponent implements OnInit, AfterViewInit {
       });
     }
   }
+
+  protected readonly ROOM_TYPE_OPTIONS = ROOM_TYPE_OPTIONS;
 }

@@ -2,8 +2,8 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {environment} from '../environment/environment';
 import {Observable} from 'rxjs';
-import {Staff} from '../models/user/staff.model';
 import {Resident} from '../models/user/resident.model';
+import {User} from '../models/user/user.model';
 
 @Injectable({
   providedIn: 'root'
@@ -13,8 +13,8 @@ export class UserRepository {
 
   constructor(private http: HttpClient) { }
 
-  getStaff(): Observable<Staff[]> {
-    return this.http.get<Staff[]>(`${this.api}/staff`);
+  getStaff(): Observable<User[]> {
+    return this.http.get<User[]>(`${this.api}/staff`);
   }
 
   getResidents(): Observable<Resident[]> {

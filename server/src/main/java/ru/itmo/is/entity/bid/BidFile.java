@@ -1,9 +1,11 @@
 package ru.itmo.is.entity.bid;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.Setter;
-import ru.itmo.is.storage.FileRecord;
 
 @Entity
 @Getter
@@ -15,8 +17,4 @@ public class BidFile {
     @JoinColumn(name = "bid_id")
     private Bid bid;
     private String name;
-
-    public FileRecord record() {
-        return new FileRecord(key, name);
-    }
 }

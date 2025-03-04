@@ -12,5 +12,5 @@ public class BidRequest {
     @NotNull
     private String text;
     @NotNull
-    private List<String> attachments;
+    private List<String> attachmentKeys;
 }

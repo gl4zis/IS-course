@@ -34,7 +34,7 @@ public class GuardService {
 
     public List<GuardHistory> getHistory(String login) {
         userService.getResidentByLogin(login); // To check that it is resident
-        List<Event> events = eventRepository.getByTypeInAndResidentLoginOrderByTimestampDesc(
+        List<Event> events = eventRepository.getByTypeInAndUsrLoginOrderByTimestampDesc(
                 List.of(Event.Type.IN, Event.Type.OUT), login
         );
         return events.stream().map(this::mapGuardEvent).toList();
@@ -47,7 +47,7 @@ public class GuardService {
 
     private void createGuardEvent(String login, Event.Type type) {
         var event = new Event();
-        event.setResident(userService.getResidentByLogin(login));
+        event.setUsr(userService.getResidentByLogin(login));
         event.setType(type);
         eventRepository.save(event);
     }

@@ -3,6 +3,7 @@ package ru.itmo.is.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import ru.itmo.is.dto.OneFieldDto;
 import ru.itmo.is.dto.request.bid.BidRequest;
 import ru.itmo.is.dto.request.bid.DepartureRequest;
 import ru.itmo.is.dto.request.bid.OccupationRequest;
@@ -99,14 +100,20 @@ public class BidController {
     }
 
     @RolesAllowed(User.Role.MANAGER)
-    @PostMapping("/{id}/deny")
-    public void denyBid(@PathVariable("id") long id) {
-        bidService.denyBid(id);
-    }
-
-    @RolesAllowed(User.Role.MANAGER)
     @PostMapping("/{id}/accept")
     public void acceptBid(@PathVariable("id") long id) {
         bidService.acceptBid(id);
+    }
+
+    @RolesAllowed(User.Role.MANAGER)
+    @PostMapping("/{id}/pend")
+    public void pendBid(@PathVariable("id") long id, @RequestBody @Valid OneFieldDto<String> body) {
+        bidService.pendBid(id, body.getData());
+    }
+
+    @RolesAllowed(User.Role.MANAGER)
+    @PostMapping("/{id}/deny")
+    public void denyBid(@PathVariable("id") long id, @RequestBody @Valid OneFieldDto<String> body) {
+        bidService.denyBid(id, body.getData());
     }
 }

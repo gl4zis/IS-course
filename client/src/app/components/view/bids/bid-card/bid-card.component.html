@@ -2,21 +2,22 @@
   <p-card (click)="open.emit(number)" [style]="{width: '100%'}">
     <div class="bid-card">
       <div>
-        <div>Заявка номер #{{ number }} на {{ typeMap[type] }}</div>
+        <div>Заявка #{{ number }} на {{ BID_TYPE_MAP[type] }}</div>
         <div *ngIf="sender">От
-          <a *ngIf="isSenderResident()"
+          <a *ngIf="sender.role === Role.RESIDENT"
              [routerLink]="['/residents']"
              [queryParams]="{ search: sender.login }"
           >
             {{ sender.name }} {{ sender.surname }}
           </a>
-          <ng-container *ngIf="!isSenderResident()">
+          <ng-container *ngIf="sender.role !== Role.RESIDENT">
             {{ sender.name }} {{ sender.surname }} (нерезидент &#64;{{ sender.login }})
           </ng-container>
         </div>
       </div>
-      <div>
-        {{ status }}
+      <div *ngIf="manager">Обработчик &#64;{{ manager.login }}</div>
+      <div [style]="{ color: BID_STATUS_COLOR_MAP[status] }">
+        <b>{{ status }}</b>
       </div>
     </div>
   </p-card>

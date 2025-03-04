@@ -17,6 +17,10 @@ export class RoomRepository {
     return this.http.get<Room[]>(`${this.api}`);
   }
 
+  getAvailableForResident(resident: string): Observable<Room[]> {
+    return this.http.get<Room[]>(`${this.api}/for-resident?login=${resident}`);
+  }
+
   get(id: number): Observable<Room> {
     return this.http.get<Room>(`${this.api}/${id}`);
   }

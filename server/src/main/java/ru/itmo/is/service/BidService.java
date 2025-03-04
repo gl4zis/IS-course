@@ -1,6 +1,7 @@
 package ru.itmo.is.service;
 
 import jakarta.annotation.Nullable;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.itmo.is.dto.request.bid.BidRequest;
@@ -19,6 +20,7 @@ import ru.itmo.is.entity.bid.RoomChangeBid;
 import ru.itmo.is.entity.dorm.Dormitory;
 import ru.itmo.is.entity.dorm.Room;
 import ru.itmo.is.entity.dorm.University;
+import ru.itmo.is.entity.notification.Notification;
 import ru.itmo.is.entity.user.Resident;
 import ru.itmo.is.entity.user.User;
 import ru.itmo.is.exception.BadRequestException;
@@ -39,10 +41,16 @@ public class BidService {
     private final BidFileRepository bidFileRepository;
     private final EventRepository eventRepository;
     private final ResidentRepository residentRepository;
+    private final NotificationRepository notificationRepository;
+    private final UserRepository userRepository;
+    private final BidComparator bidComparator;
 
     public List<BidResponse> getInProcessBids() {
         List<Bid> bids = bidRepository.getByStatusIn(List.of(Bid.Status.IN_PROCESS));
-        return bids.stream().map(this::mapBid).toList();
+        return bids.stream()
+                .sorted(bidComparator::compare)
+                .map(this::mapBid)
+                .toList();
     }
 
     public List<BidResponse> getPendingBids() {
@@ -74,7 +82,7 @@ public class BidService {
         throw new ForbiddenException("You are not allowed to get bid by this user");
     }
 
-    public void denyBid(Long id) {
+    public void denyBid(Long id, String comment) {
         Optional<Bid> bidO = bidRepository.findById(id);
         if (bidO.isEmpty()) {
             throw new BadRequestException("No such bid");
@@ -82,9 +90,11 @@ public class BidService {
         Bid bid = bidO.get();
         bid.setStatus(Bid.Status.DENIED);
         bid.setManager(userService.getCurrentUserOrThrow());
+        bid.setComment(comment);
         bidRepository.save(bid);
     }
 
+    @Transactional
     public void acceptBid(Long id) {
         Optional<Bid> bidO = bidRepository.findById(id);
         if (bidO.isEmpty()) {
@@ -106,6 +116,27 @@ public class BidService {
         bidRepository.save(bid);
     }
 
+    public void pendBid(long id, String comment) {
+        Optional<Bid> bidO = bidRepository.findById(id);
+        if (bidO.isEmpty()) {
+            throw new BadRequestException("No such bid");
+        }
+        Bid bid = bidO.get();
+        if (bid.getStatus() != Bid.Status.IN_PROCESS) {
+            throw new BadRequestException("Bid was already processed");
+        }
+        bid.setComment(comment);
+        bid.setManager(userService.getCurrentUserOrThrow());
+        bid.setStatus(Bid.Status.PENDING_REVISION);
+        bidRepository.save(bid);
+
+        Notification notification = new Notification();
+        notification.setBid(bid);
+        notification.setReceiver(bid.getSender());
+        notification.setText("Вам нужно поправить/дополнить данные в заявке");
+        notificationRepository.save(notification);
+    }
+
     public void saveOccupationBid(@Nullable Long bidId, OccupationRequest req) {
         var bid = new OccupationBid();
         if (bidId != null) {
@@ -124,7 +155,8 @@ public class BidService {
             throw new BadRequestException("No such dormitory or this dormitory is not linked with the university");
         }
 
-        bid.setFiles(bidFileRepository.getByKeyIn(req.getAttachments()));
+        bid.setStatus(Bid.Status.IN_PROCESS);
+        bid.setFiles(bidFileRepository.getByKeyIn(req.getAttachmentKeys()));
         bid.setSender(userService.getCurrentUserOrThrow());
         bid.setText(req.getText());
         bid.setUniversity(university);
@@ -139,7 +171,8 @@ public class BidService {
             bid.setId(bidId);
         }
 
-        bid.setFiles(bidFileRepository.getByKeyIn(req.getAttachments()));
+        bid.setStatus(Bid.Status.IN_PROCESS);
+        bid.setFiles(bidFileRepository.getByKeyIn(req.getAttachmentKeys()));
         bid.setSender(userService.getCurrentUserOrThrow());
         bid.setText(req.getText());
         bid.setType(Bid.Type.EVICTION);
@@ -153,7 +186,8 @@ public class BidService {
             bid.setId(bidId);
         }
 
-        bid.setFiles(bidFileRepository.getByKeyIn(req.getAttachments()));
+        bid.setStatus(Bid.Status.IN_PROCESS);
+        bid.setFiles(bidFileRepository.getByKeyIn(req.getAttachmentKeys()));
         bid.setSender(userService.getCurrentUserOrThrow());
         bid.setText(req.getText());
         bid.setDayFrom(req.getDayFrom());
@@ -176,7 +210,8 @@ public class BidService {
             }
         }
 
-        bid.setFiles(bidFileRepository.getByKeyIn(req.getAttachments()));
+        bid.setStatus(Bid.Status.IN_PROCESS);
+        bid.setFiles(bidFileRepository.getByKeyIn(req.getAttachmentKeys()));
         bid.setSender(userService.getCurrentUserOrThrow());
         bid.setText(req.getText());
         bid.setRoomTo(roomO.orElse(null));
@@ -196,52 +231,61 @@ public class BidService {
             throw new BadRequestException("Invalid type of original bid");
         }
         if (!bidO.get().getStatus().isEditable()) {
-            throw new BadRequestException("This bid ");
+            throw new BadRequestException("This bid is not editable");
         }
     }
 
     private void acceptOccupationBid(OccupationBid bid) {
-        List<Integer> blockRoomIds = roomRepository.getIdsByType(Room.Type.BLOCK);
-        Optional<Integer> roomIdO = blockRoomIds.stream().filter(roomRepository::isRoomFree).findFirst();
-        if (roomIdO.isEmpty()) {
-            List<Integer> aisleRoomIds = roomRepository.getIdsByType(Room.Type.AISLE);
-            roomIdO = aisleRoomIds.stream().filter(roomRepository::isRoomFree).findFirst();
+        List<Room> blockRoomIds = roomRepository
+                .getByTypeAndDormitoryId(Room.Type.BLOCK, bid.getDormitory().getId());
+        Optional<Room> roomO = blockRoomIds.stream()
+                .filter(r -> roomRepository.isRoomFree(r.getId()))
+                .findFirst();
+        if (roomO.isEmpty()) {
+            List<Room> aisleRoomIds = roomRepository
+                    .getByTypeAndDormitoryId(Room.Type.AISLE, bid.getDormitory().getId());
+            roomO = aisleRoomIds.stream()
+                    .filter(r -> roomRepository.isRoomFree(r.getId()))
+                    .findFirst();
         }
-        if (roomIdO.isEmpty()) {
+        if (roomO.isEmpty()) {
             throw new BadRequestException("No free room");
         }
 
-        Room room = roomRepository.findById(roomIdO.get()).get();
-        Resident resident = Resident.of(bid.getSender());
-        resident.setUniversity(bid.getUniversity());
-        resident.setRoom(room);
-        residentRepository.save(resident);
+        User resident = bid.getSender();
+        residentRepository.userIsResidentNow(
+                resident.getLogin(),
+                bid.getUniversity().getId(),
+                roomO.get().getId()
+        );
+        resident.setRole(User.Role.RESIDENT);
+        userRepository.save(resident);
 
         var event = new Event();
         event.setType(Event.Type.OCCUPATION);
-        event.setRoom(room);
-        event.setResident(resident);
+        event.setRoom(roomO.get());
+        event.setUsr(resident);
         eventRepository.save(event);
     }
 
     private void acceptEvictionBid(Bid bid) {
-        Resident resident = residentRepository.findById(bid.getSender().getLogin()).get();
-
-        resident.setEvicted(true);
-        resident.setRoom(null);
-        residentRepository.save(resident);
+        Resident nonResident = userService.getResidentByLogin(bid.getSender().getLogin());
+        residentRepository.userIsNotResidentAnyMore(nonResident.getLogin());
+        nonResident.setRole(User.Role.NON_RESIDENT);
+        userRepository.save(nonResident);
 
         var event = new Event();
         event.setType(Event.Type.EVICTION);
-        event.setResident(resident);
+        event.setUsr(nonResident);
         eventRepository.save(event);
     }
 
     private void acceptDepartureBid(DepartureBid bid) {
-        // pass just save bid with ACCEPTED status
+        // just save bid with ACCEPTED status
     }
 
     private void acceptRoomChangeBid(RoomChangeBid bid) {
+        Resident resident = userService.getResidentByLogin(bid.getSender().getLogin());
         Room room;
         if (bid.getRoomTo() != null) {
             room = bid.getRoomTo();
@@ -249,22 +293,23 @@ public class BidService {
                 throw new BadRequestException("Room is not free");
             }
         } else {
-            List<Integer> roomIds = roomRepository.getIdsByType(bid.getRoomPreferType());
-            Optional<Integer> roomIdO = roomIds.stream().filter(roomRepository::isRoomFree).findFirst();
-            if (roomIdO.isEmpty()) {
+            List<Room> rooms = roomRepository
+                    .getByTypeAndDormitoryId(bid.getRoomPreferType(), resident.getRoom().getDormitory().getId());
+            Optional<Room> roomO = rooms.stream()
+                    .filter(r -> roomRepository.isRoomFree(r.getId()))
+                    .findFirst();
+            if (roomO.isEmpty()) {
                 throw new BadRequestException("No free room");
             }
-            room = roomRepository.findById(roomIdO.get()).get();
+            room = roomO.get();
         }
-
-        Resident resident = residentRepository.findById(bid.getSender().getLogin()).get();
         resident.setRoom(room);
         residentRepository.save(resident);
 
         var event = new Event();
         event.setType(Event.Type.ROOM_CHANGE);
         event.setRoom(room);
-        event.setResident(resident);
+        event.setUsr(resident);
         eventRepository.save(event);
     }
 

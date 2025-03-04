@@ -3,7 +3,6 @@ import {environment} from '../environment/environment';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {Notification} from '../models/notification/notification.model';
-import {OneFieldResponse} from '../models/one-field.response';
 
 @Injectable({
   providedIn: 'root'

@@ -7,6 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import ru.itmo.is.dto.OneFieldDto;
 import ru.itmo.is.dto.response.FileResponse;
 import ru.itmo.is.service.FileService;
 
@@ -17,8 +18,8 @@ public class FileController {
     private final FileService fileService;
 
     @PostMapping("/upload")
-    public void upload(@RequestParam MultipartFile file) {
-        fileService.upload(file);
+    public OneFieldDto<String> upload(@RequestParam MultipartFile file) {
+        return new OneFieldDto<>(fileService.upload(file));
     }
 
     @PostMapping("/download/{filename}")

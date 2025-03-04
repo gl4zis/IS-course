@@ -65,11 +65,15 @@ export class BidRepository {
     return this.http.put<void>(`${this.api}/room-change/${id}`, req);
   }
 
-  deny(id: number): Observable<void> {
-    return this.http.post<void>(`${this.api}/${id}/deny`, {});
+  deny(id: number, comment: string): Observable<void> {
+    return this.http.post<void>(`${this.api}/${id}/deny`, { data: comment });
   }
 
   accept(id: number): Observable<void> {
     return this.http.post<void>(`${this.api}/${id}/accept`, {});
+  }
+
+  pend(id: number, comment: string): Observable<void> {
+    return this.http.post<void>(`${this.api}/${id}/pend`, { data: comment });
   }
 }

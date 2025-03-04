@@ -1,6 +1,5 @@
 import {Component, OnInit} from '@angular/core';
 import {NavHeaderComponent} from '../../common/nav-header/nav-header.component';
-import {Staff} from '../../../models/user/staff.model';
 import {UserRepository} from '../../../repositories/user.repository';
 import {PrimeTemplate} from 'primeng/api';
 import {TableModule} from 'primeng/table';
@@ -16,6 +15,7 @@ import {RegisterReq} from '../../../models/auth/register.model';
 import {AuthRepository} from '../../../repositories/auth.repository';
 import {Select} from 'primeng/select';
 import {Dialog} from 'primeng/dialog';
+import {User} from '../../../models/user/user.model';
 
 @Component({
   selector: 'staff-view',
@@ -50,7 +50,7 @@ export class StaffComponent implements OnInit {
 
   registerDialog = false;
 
-  staff: Staff[] = [];
+  staff: User[] = [];
   form: RegisterReq = {
     login: '',
     password: '',
@@ -75,7 +75,7 @@ export class StaffComponent implements OnInit {
     });
   }
 
-  fire(staff: Staff) {
+  fire(staff: User) {
     this.userRepository.fire(staff.login).subscribe({
       next: () => this.loadStaff()
     });

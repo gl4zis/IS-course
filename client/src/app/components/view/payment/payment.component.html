@@ -92,7 +92,7 @@
     </ng-template>
     <ng-template pTemplate="body" let-event>
       <tr>
-        <td>{{ Utils.formatDate(event.timestamp) }}</td>
+        <td>{{ Utils.formatDateTime(event.timestamp) }}</td>
         <td>{{ event.dormitory }}, room #{{ event.roomNumber }}</td>
         <td>{{ event.sum }}</td>
       </tr>
