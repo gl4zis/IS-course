@@ -1,21 +1,49 @@
 <nav-header/>
 
-<p-table [value]="residents"
-         styleClass="p-datatable-gridlines p-datatable-sm"
-         [style]="{width: '90%', 'margin-top': '30px'}" class="center"
-         [paginator]="true" [rows]="15"
+<p-table #table
+  [value]="residents"
+  styleClass="p-datatable-gridlines p-datatable-sm"
+  [style]="{width: '90%', 'margin-top': '30px'}" class="center"
+  [paginator]="true" [rows]="15"
+  sortMode="multiple"
+  [globalFilterFields]="['login', 'name', 'surname', 'university']"
 >
+  <ng-template pTemplate="caption">
+    <div class="flex">
+      <p-iconfield iconPosition="left" class="ml-auto">
+        <p-inputicon>
+          <i class="pi pi-search"></i>
+        </p-inputicon>
+        <input pInputText type="text" [(ngModel)]="searchValue" (input)="filter()" placeholder="Search keyword" />
+      </p-iconfield>
+    </div>
+  </ng-template>
   <ng-template pTemplate="header">
     <tr>
-      <th>Login</th>
-      <th>Name</th>
-      <th>Surname</th>
-      <th>University</th>
-      <th>Dormitory</th>
-      <th>Room number</th>
-      <th>Debt</th>
-      <th>Last came out</th>
-      <th>To eviction</th>
+      <th pSortableColumn="login">
+        Login <p-sortIcon field="login"/>
+      </th>
+      <th pSortableColumn="name">
+        Name <p-sortIcon field="name"/>
+      </th>
+      <th pSortableColumn="surname">
+        Surname <p-sortIcon field="surname"/>
+      </th>
+      <th pSortableColumn="university">
+        University <p-sortIcon field="university"/>
+      </th>
+      <th pSortableColumn="dormitory">
+        Dormitory <p-sortIcon field="dormitory"/>
+      </th>
+      <th pSortableColumn="roomNumber">
+        Room number <p-sortIcon field="roomNumber"/>
+      </th>
+      <th pSortableColumn="debt">
+        Debt <p-sortIcon field="debt"/>
+      </th>
+      <th pSortableColumn="lastCameOut">
+        Last came out <p-sortIcon field="lastCameOut"/>
+      </th>
     </tr>
   </ng-template>
   <ng-template pTemplate="body" let-resident>
@@ -23,16 +51,21 @@
       <td>&#64;{{ resident.login }}</td>
       <td>{{ resident.name }}</td>
       <td>{{ resident.surname }}</td>
-      <td>{{ resident.university }}</td>
-      <td>{{ resident.dormitory }}</td>
-      <td>{{ resident.roomNumber }}</td>
+      <td><a [routerLink]="['/university']" [queryParams]="{ id: resident.university.id }">
+        {{ resident.university.name }}
+      </a></td>
+      <td><a [routerLink]="['/dormitory']" [queryParams]="{ id: resident.dormitory.id }">
+        {{ resident.dormitory.address }}
+      </a></td>
+      <td><a [routerLink]="['/room']" [queryParams]="{ search: resident.roomNumber }">
+        {{ resident.roomNumber }}
+      </a></td>
       <td><a [routerLink]="['/payment']" [queryParams]="{ resident: resident.login }">
         {{ resident.debt }}
       </a></td>
       <td><a [routerLink]="['/inout']" [queryParams]="{ resident: resident.login }">
         {{ Utils.formatDate(resident.lastCameOut) || 'Now inside' }}
       </a></td>
-      <td>{{ resident.evictionReason || '' }}</td>
     </tr>
   </ng-template>
 </p-table>

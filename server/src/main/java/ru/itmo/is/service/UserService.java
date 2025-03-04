@@ -2,7 +2,6 @@ package ru.itmo.is.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.itmo.is.dto.response.EvictionResponse;
 import ru.itmo.is.dto.response.user.ResidentResponse;
 import ru.itmo.is.dto.response.user.StaffResponse;
 import ru.itmo.is.entity.Event;
@@ -15,10 +14,8 @@ import ru.itmo.is.repository.EventRepository;
 import ru.itmo.is.repository.UserRepository;
 import ru.itmo.is.security.SecurityContext;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -52,33 +49,17 @@ public class UserService {
         return users.stream().map(StaffResponse::new).toList();
     }
 
-    // TODO realize toEviction flag by all possible reason
     public List<ResidentResponse> getResidents() {
         List<User> users = userRepository.getUsersByRoleIn(List.of(User.Role.RESIDENT));
-        Set<String> toEvictionByDebtResidents = eventRepository.getResidentsToEvictionByDebt();
         return users.stream()
                 .map(user -> (Resident) user)
                 .map(resident -> {
                     int debt = eventRepository.calculateResidentDebt(resident.getLogin());
                     Event lastInOutEvent = eventRepository.getLastInOutEvent(resident.getLogin());
-
-                    LocalDateTime lastCameOut = null;
-                    EvictionResponse.Reason evictionReason = null;
-                    if (lastInOutEvent.getType() == Event.Type.OUT) {
-                        lastCameOut = lastInOutEvent.getTimestamp();
-                        if (LocalDateTime.now().minusDays(30).isAfter(lastCameOut)) {
-                            evictionReason = EvictionResponse.Reason.NON_RESIDENCE;
-                        }
-                    }
-                    if (toEvictionByDebtResidents.contains(resident.getLogin())) {
-                        evictionReason = EvictionResponse.Reason.NON_PAYMENT;
-                    }
-
                     return new ResidentResponse(
                             resident,
                             debt,
-                            lastCameOut,
-                            evictionReason
+                            lastInOutEvent.getType() == Event.Type.IN ? null : lastInOutEvent.getTimestamp()
                     );
                 })
                 .toList();

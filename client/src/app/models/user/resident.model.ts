@@ -1,11 +1,11 @@
 import {User} from './user.model';
-import {EvictionReason} from '../eviction-reason.model';
+import {University} from '../university/university.model';
+import {Dormitory} from '../dormitory/dormitory.model';
 
 export interface Resident extends User {
-  university: string;
-  dormitory: string;
+  university: University;
+  dormitory: Dormitory;
   roomNumber: number;
   debt: number;
   lastCameOut?: Date;
-  evictionReason?: EvictionReason;
 }

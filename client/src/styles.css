@@ -27,6 +27,10 @@ body {
 .input {
   width: 100%;
 
+  .p-inputnumber {
+    width: 100%;
+  }
+
   label {
     margin-left: 10px;
     color: gray;
@@ -52,6 +56,15 @@ body {
   width: 100%;
   display: flex;
   justify-content: space-between;
+}
+
+.select-row {
+  margin-top: 10px;
+  width: 100%;
+
+  .p-select {
+    width: 100%;
+  }
 }
 
 .dropdown-container {
@@ -138,4 +151,8 @@ body {
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+}
+
+tr.yellow {
+  background-color: blanchedalmond !important;
 }

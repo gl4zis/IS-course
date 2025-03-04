@@ -10,6 +10,9 @@ import {BidsComponent} from './components/view/bids/bids.component';
 import {PaymentComponent} from './components/view/payment/payment.component';
 import {ResidentsComponent} from './components/view/residents/residents.component';
 import {StaffComponent} from './components/view/staff/staff.component';
+import {UniversityComponent} from './components/view/building/university/university.component';
+import {DormitoryComponent} from './components/view/building/dormitory/dormitory.component';
+import {RoomComponent} from './components/view/building/room/room.component';
 
 export const routes = [
   { path: 'forbidden', component: ForbiddenComponent },
@@ -20,6 +23,9 @@ export const routes = [
   { path: 'payment', component: PaymentComponent, canActivate: [AuthGuard], roles: [Role.RESIDENT, Role.MANAGER] },
   { path: 'residents', component: ResidentsComponent, canActivate: [AuthGuard], roles: [Role.MANAGER] },
   { path: 'staff', component: StaffComponent, canActivate: [AuthGuard], roles: [Role.MANAGER] },
+  { path: 'university', component: UniversityComponent, canActivate: [AuthGuard], roles: [Role.MANAGER] },
+  { path: 'dormitory', component: DormitoryComponent, canActivate: [AuthGuard], roles: [Role.MANAGER] },
+  { path: 'room', component: RoomComponent, canActivate: [AuthGuard], roles: [Role.MANAGER] },
   { path: '', redirectTo: 'auth', pathMatch: "full" },
   { path: '**', redirectTo: 'auth' },
 ];

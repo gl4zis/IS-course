@@ -10,4 +10,6 @@ import java.util.List;
 @Repository
 public interface UniversityRepository extends CrudRepository<University, Integer> {
     List<University> getByIdIn(Collection<Integer> ids);
+
+    List<University> findAllByOrderById();
 }

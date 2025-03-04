@@ -8,7 +8,6 @@ import ru.itmo.is.entity.dorm.University;
 import ru.itmo.is.exception.NotFoundException;
 import ru.itmo.is.repository.UniversityRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -17,9 +16,7 @@ public class UniversityService {
     private final UniversityRepository universityRepository;
 
     public List<UniversityResponse> getAllUniversities() {
-        List<UniversityResponse> res = new ArrayList<>();
-        universityRepository.findAll().forEach(u -> res.add(new UniversityResponse(u)));
-        return res;
+        return universityRepository.findAllByOrderById().stream().map(UniversityResponse::new).toList();
     }
 
     public UniversityResponse getUniversity(int id) {

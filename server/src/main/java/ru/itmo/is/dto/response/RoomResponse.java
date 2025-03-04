@@ -3,7 +3,10 @@ package ru.itmo.is.dto.response;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
+import ru.itmo.is.dto.response.user.UserResponse;
 import ru.itmo.is.entity.dorm.Room;
+
+import java.util.List;
 
 @Getter
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
@@ -15,7 +18,7 @@ public class RoomResponse {
     int capacity;
     int floor;
     int cost;
-    int residentsNumber;
+    List<UserResponse> residents;
 
     public RoomResponse(Room room) {
         this.id = room.getId();
@@ -25,6 +28,6 @@ public class RoomResponse {
         this.capacity = room.getCapacity();
         this.floor = room.getFloor();
         this.cost = room.getCost();
-        this.residentsNumber = room.getResidents().size();
+        this.residents = room.getResidents().stream().map(UserResponse::new).toList();
     }
 }

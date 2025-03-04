@@ -11,7 +11,6 @@ import ru.itmo.is.exception.NotFoundException;
 import ru.itmo.is.repository.DormitoryRepository;
 import ru.itmo.is.repository.RoomRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,9 +21,7 @@ public class RoomService {
     private final DormitoryRepository dormitoryRepository;
 
     public List<RoomResponse> getAllRooms() {
-        List<RoomResponse> res = new ArrayList<>();
-        roomRepository.findAll().forEach(room -> res.add(new RoomResponse(room)));
-        return res;
+        return roomRepository.findAllByOrderById().stream().map(RoomResponse::new).toList();
     }
 
     public RoomResponse getRoom(int id) {
@@ -56,6 +53,9 @@ public class RoomService {
     public void deleteRoom(int id) {
         Room room = roomRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("No such room"));
+        if (!room.getResidents().isEmpty()) {
+            throw new BadRequestException("Room has residents");
+        }
         roomRepository.delete(room);
     }
 }

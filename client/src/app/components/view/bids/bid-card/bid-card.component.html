@@ -6,7 +6,7 @@
         <div *ngIf="sender">От
           <a *ngIf="isSenderResident()"
              [routerLink]="['/residents']"
-             [queryParams]="{ resident: sender.login }"
+             [queryParams]="{ search: sender.login }"
           >
             {{ sender.name }} {{ sender.surname }}
           </a>

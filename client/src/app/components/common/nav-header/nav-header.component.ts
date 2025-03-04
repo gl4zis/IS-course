@@ -83,6 +83,27 @@ export class NavHeaderComponent implements OnInit {
       label: 'Residents',
       command: () => this.router.navigate(['residents']),
       icon: 'pi pi-user'
+    },
+    {
+      label: 'Buildings',
+      icon: 'pi pi-building',
+      items: [
+        {
+          label: 'University',
+          command: () => this.router.navigate(['university']),
+          icon: 'pi pi-building-columns'
+        },
+        {
+          label: 'Dormitory',
+          command: () => this.router.navigate(['dormitory']),
+          icon: 'pi pi-home'
+        },
+        {
+          label: 'Room',
+          command: () => this.router.navigate(['room']),
+          icon: 'pi pi-box'
+        }
+      ]
     }
   ];
 

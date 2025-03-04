@@ -14,4 +14,6 @@ public interface RoomRepository extends CrudRepository<Room, Integer> {
     @Query(value = "SELECT NOT is_room_filled(:roomId)", nativeQuery = true)
     boolean isRoomFree(Integer roomId);
     Optional<Room> getByDormitoryIdAndNumber(int dormitoryId, int number);
+
+    List<Room> findAllByOrderById();
 }

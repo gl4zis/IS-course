@@ -1,8 +1,9 @@
 import {RoomRequest} from './room.request';
+import {User} from '../user/user.model';
 
 export interface Room extends RoomRequest {
   id: number;
-  residentsNumber: number;
+  residents: User[];
 }
 
 export enum RoomType {
