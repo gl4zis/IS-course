@@ -2,6 +2,7 @@ package ru.itmo.is.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.itmo.is.dto.response.EvictionResponse;
 import ru.itmo.is.dto.response.user.ResidentResponse;
 import ru.itmo.is.dto.response.user.UserResponse;
 import ru.itmo.is.entity.Event;
@@ -16,8 +17,8 @@ import ru.itmo.is.repository.UserRepository;
 import ru.itmo.is.security.SecurityContext;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalTime;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -56,11 +57,9 @@ public class UserService {
                 .map(resident -> {
                     int debt = eventRepository.calculateResidentDebt(resident.getLogin());
 
-                    Event lastInOutEvent = eventRepository.getLastInOutEvent(resident.getLogin());
-                    LocalDateTime lastCameOut = null;
-                    if (lastInOutEvent != null && lastInOutEvent.getType() == Event.Type.OUT) {
-                        lastCameOut = lastInOutEvent.getTimestamp();
-                    }
+                    LocalDateTime lastCameOut = eventRepository.getLastInOutEvent(resident.getLogin())
+                            .map(Event::getTimestamp)
+                            .orElse(null);
 
                     return new ResidentResponse(
                             resident,
@@ -81,4 +80,50 @@ public class UserService {
         }
         userRepository.delete(userO.get());
     }
+
+    public Set<EvictionResponse> getResidentsToEviction() {
+        Set<EvictionResponse> response = new HashSet<>();
+
+        List<String> toEvictionByDebtLogins = eventRepository.getResidentsToEvictionByDebt();
+        List<User> toEvictionByDebt = userRepository.getByLoginIn(toEvictionByDebtLogins);
+        toEvictionByDebt.forEach(u -> response.add(EvictionResponse.nonPayment(u)));
+
+        List<UserEvent> userLastInOutEvents = userRepository.getUsersByRoleIn(List.of(User.Role.RESIDENT)).stream()
+                .map(u -> new UserOptionalEvent(u, eventRepository.getLastInOutEvent(u.getLogin())))
+                .filter(ue -> ue.event().isPresent())
+                .map(uoe -> new UserEvent(uoe.user(), uoe.event().get()))
+                .toList();
+
+        List<User> toEvictionByResidence = userLastInOutEvents.stream()
+                .filter(ue -> ue.event().getType().equals(Event.Type.OUT))
+                .filter(ue -> ue.event().getTimestamp().isBefore(LocalDateTime.now().minusDays(7)))
+                .map(UserEvent::user)
+                .toList();
+        toEvictionByResidence.forEach(u -> response.add(EvictionResponse.nonResidence(u)));
+
+        List<User> toEvictionByRules = userLastInOutEvents.stream()
+                .map(ue -> new UserTime(ue.user(), ue.event().getTimestamp().toLocalTime()))
+                .filter(ut -> !ut.time().isBefore(LocalTime.MIDNIGHT) && ut.time.isBefore(LocalTime.of(6, 0)))
+                .map(UserTime::user)
+                .toList();
+        toEvictionByRules.forEach(u -> response.add(EvictionResponse.ruleViolation(u)));
+
+        return response;
+    }
+
+    public void evict(String login) {
+        Resident nonResident = getResidentByLogin(login);
+        residentRepository.userIsNotResidentAnyMore(nonResident.getLogin());
+        nonResident.setRole(User.Role.NON_RESIDENT);
+        userRepository.save(nonResident);
+
+        var event = new Event();
+        event.setType(Event.Type.EVICTION);
+        event.setUsr(nonResident);
+        eventRepository.save(event);
+    }
+
+    private record UserOptionalEvent(User user, Optional<Event> event) {}
+    private record UserEvent(User user, Event event) {}
+    private record UserTime(User user, LocalTime time) {}
 }

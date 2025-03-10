@@ -12,4 +12,5 @@ public interface UserRepository extends CrudRepository<User, String> {
     boolean existsByLogin(String login);
     long countByRole(User.Role role);
     List<User> getUsersByRoleIn(Collection<User.Role> role);
+    List<User> getByLoginIn(Collection<String> login);
 }

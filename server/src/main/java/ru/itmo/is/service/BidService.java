@@ -300,15 +300,7 @@ public class BidService {
     }
 
     private void acceptEvictionBid(Bid bid) {
-        Resident nonResident = userService.getResidentByLogin(bid.getSender().getLogin());
-        residentRepository.userIsNotResidentAnyMore(nonResident.getLogin());
-        nonResident.setRole(User.Role.NON_RESIDENT);
-        userRepository.save(nonResident);
-
-        var event = new Event();
-        event.setType(Event.Type.EVICTION);
-        event.setUsr(nonResident);
-        eventRepository.save(event);
+        userService.evict(bid.getSender().getLogin());
     }
 
     private void acceptDepartureBid(DepartureBid bid) {

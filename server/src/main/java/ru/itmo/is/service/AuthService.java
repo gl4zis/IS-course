@@ -2,10 +2,10 @@ package ru.itmo.is.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.itmo.is.dto.OneFieldDto;
 import ru.itmo.is.dto.request.LoginRequest;
 import ru.itmo.is.dto.request.PasswordChangeRequest;
 import ru.itmo.is.dto.request.RegisterRequest;
-import ru.itmo.is.dto.OneFieldDto;
 import ru.itmo.is.dto.response.ProfileResponse;
 import ru.itmo.is.entity.user.Resident;
 import ru.itmo.is.entity.user.User;
@@ -16,7 +16,6 @@ import ru.itmo.is.mapper.UserMapper;
 import ru.itmo.is.repository.UserRepository;
 import ru.itmo.is.security.JwtManager;
 import ru.itmo.is.security.PasswordManager;
-import ru.itmo.is.security.SecurityContext;
 
 import java.util.Optional;
 
@@ -26,7 +25,6 @@ public class AuthService {
     private final JwtManager jwtManager;
     private final UserRepository userRepository;
     private final UserMapper mapper;
-    private final SecurityContext securityContext;
     private final UserService userService;
 
     public OneFieldDto<String> register(RegisterRequest req) {
@@ -50,11 +48,7 @@ public class AuthService {
     }
 
     public void changePassword(PasswordChangeRequest req) {
-        Optional<User> userO = userRepository.findById(securityContext.getUsername());
-        if (userO.isEmpty()) {
-            throw new UnauthorizedException("Invalid auth token");
-        }
-        User user = userO.get();
+        User user = userService.getCurrentUserOrThrow();
         if (!PasswordManager.matches(req.getOldPassword(), user.getPassword())) {
             throw new BadRequestException("Invalid old password");
         }

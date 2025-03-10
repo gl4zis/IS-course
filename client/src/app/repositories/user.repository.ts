@@ -4,6 +4,7 @@ import {environment} from '../environment/environment';
 import {Observable} from 'rxjs';
 import {Resident} from '../models/user/resident.model';
 import {User} from '../models/user/user.model';
+import {Eviction} from '../models/eviction.model';
 
 @Injectable({
   providedIn: 'root'
@@ -23,5 +24,13 @@ export class UserRepository {
 
   fire(login: string): Observable<void> {
     return this.http.delete<void>(`${this.api}/fire?login=${login}`, {});
+  }
+
+  getEvictions(): Observable<Eviction[]> {
+    return this.http.get<Eviction[]>(`${this.api}/residents/to-eviction`);
+  }
+
+  evict(login: string): Observable<Eviction[]> {
+    return this.http.post<Eviction[]>(`${this.api}/residents/evict?login=${login}`, {});
   }
 }

@@ -23,6 +23,6 @@ public class DepartureValidator implements ConstraintValidator<ValidDeparture, D
         }
 
         long daysBetween = ChronoUnit.DAYS.between(from, to);
-        return daysBetween >= 1 && daysBetween <= 30;
+        return daysBetween >= 1 && daysBetween <= 60;
     }
 }

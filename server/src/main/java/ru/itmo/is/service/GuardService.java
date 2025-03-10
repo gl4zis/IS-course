@@ -17,18 +17,18 @@ public class GuardService {
     private final UserService userService;
 
     public void entry(String login) {
-        Event lastEvent = eventRepository.getLastInOutEvent(login);
-        if (lastEvent != null && lastEvent.getType().equals(Event.Type.IN)) {
-            throw new BadRequestException("Last guard event was the same");
-        }
+        eventRepository.getLastInOutEvent(login)
+                .filter(event -> event.getType().equals(Event.Type.OUT))
+                .orElseThrow(() -> new BadRequestException("Last guard event was the same"));
+
         createGuardEvent(login, Event.Type.IN);
     }
 
     public void exit(String login) {
-        Event lastEvent = eventRepository.getLastInOutEvent(login);
-        if (lastEvent != null && lastEvent.getType().equals(Event.Type.OUT)) {
-            throw new BadRequestException("Last guard event was the same");
-        }
+        eventRepository.getLastInOutEvent(login)
+                .filter(event -> event.getType().equals(Event.Type.IN))
+                .orElseThrow(() -> new BadRequestException("Last guard event was the same"));
+
         createGuardEvent(login, Event.Type.OUT);
     }
 

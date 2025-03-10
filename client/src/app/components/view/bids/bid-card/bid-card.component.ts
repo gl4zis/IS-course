@@ -11,7 +11,6 @@ import {Role} from '../../../../models/auth/role.model';
   selector: 'bid-card',
   standalone: true,
   templateUrl: './bid-card.component.html',
-  styleUrl: './bid-card.component.css',
   imports: [
     Card,
     NgIf,

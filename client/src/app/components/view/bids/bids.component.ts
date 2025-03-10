@@ -414,7 +414,7 @@ export class BidsComponent implements OnInit {
       (this.viewBid.type !== BidType.DEPARTURE || (
         !!this.departureData &&
         this.departureData.dayTo.getTime() - this.departureData.dayFrom.getTime() >= oneDayMillis &&
-        this.departureData.dayTo.getTime() - this.departureData.dayFrom.getTime() <= 30 * oneDayMillis
+        this.departureData.dayTo.getTime() - this.departureData.dayFrom.getTime() <= 60 * oneDayMillis
       )) &&
       (this.viewBid.type !== BidType.ROOM_CHANGE || (
         !!this.roomChangeData && (!!this.roomChangeData.roomTo.id || !!this.roomChangeData.roomPreferType) &&

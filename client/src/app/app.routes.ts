@@ -13,6 +13,7 @@ import {StaffComponent} from './components/view/staff/staff.component';
 import {UniversityComponent} from './components/view/building/university/university.component';
 import {DormitoryComponent} from './components/view/building/dormitory/dormitory.component';
 import {RoomComponent} from './components/view/building/room/room.component';
+import {EvictionComponent} from './components/view/eviction/eviction.component';
 
 export const routes: Routes = [
   { path: 'forbidden', component: ForbiddenComponent },
@@ -26,6 +27,7 @@ export const routes: Routes = [
   { path: 'university', component: UniversityComponent, canActivate: [AuthGuard], data: {roles: [Role.MANAGER]} },
   { path: 'dormitory', component: DormitoryComponent, canActivate: [AuthGuard], data: {roles: [Role.MANAGER]} },
   { path: 'room', component: RoomComponent, canActivate: [AuthGuard], data: {roles: [Role.MANAGER]} },
+  { path: 'eviction', component: EvictionComponent, canActivate: [AuthGuard], data: {roles: [Role.MANAGER]} },
   { path: '', redirectTo: 'auth', pathMatch: "full" },
   { path: '**', redirectTo: 'auth' },
 ];

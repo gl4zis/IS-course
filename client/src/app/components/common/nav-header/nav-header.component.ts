@@ -85,6 +85,11 @@ export class NavHeaderComponent implements OnInit {
       icon: 'pi pi-user'
     },
     {
+      label: 'Evictions',
+      command: () => this.router.navigate(['eviction']),
+      icon: 'pi pi-backward'
+    },
+    {
       label: 'Buildings',
       icon: 'pi pi-building',
       items: [
