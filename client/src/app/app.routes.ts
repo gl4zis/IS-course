@@ -14,18 +14,18 @@ import {UniversityComponent} from './components/view/building/university/univers
 import {DormitoryComponent} from './components/view/building/dormitory/dormitory.component';
 import {RoomComponent} from './components/view/building/room/room.component';
 
-export const routes = [
+export const routes: Routes = [
   { path: 'forbidden', component: ForbiddenComponent },
   { path: 'auth', component: AuthorizationComponent },
   { path: 'notifications', component: NotificationsComponent, canActivate: [AuthGuard] },
-  { path: 'inout', component: InoutComponent, canActivate: [AuthGuard], roles: [Role.GUARD, Role.MANAGER, Role.RESIDENT] },
-  { path: 'bids', component: BidsComponent, canActivate: [AuthGuard], roles: [Role.NON_RESIDENT, Role.RESIDENT, Role.MANAGER] },
-  { path: 'payment', component: PaymentComponent, canActivate: [AuthGuard], roles: [Role.RESIDENT, Role.MANAGER] },
-  { path: 'residents', component: ResidentsComponent, canActivate: [AuthGuard], roles: [Role.MANAGER] },
-  { path: 'staff', component: StaffComponent, canActivate: [AuthGuard], roles: [Role.MANAGER] },
-  { path: 'university', component: UniversityComponent, canActivate: [AuthGuard], roles: [Role.MANAGER] },
-  { path: 'dormitory', component: DormitoryComponent, canActivate: [AuthGuard], roles: [Role.MANAGER] },
-  { path: 'room', component: RoomComponent, canActivate: [AuthGuard], roles: [Role.MANAGER] },
+  { path: 'inout', component: InoutComponent, canActivate: [AuthGuard], data: {roles: [Role.GUARD, Role.MANAGER, Role.RESIDENT]} },
+  { path: 'bids', component: BidsComponent, canActivate: [AuthGuard], data: {roles: [Role.NON_RESIDENT, Role.RESIDENT, Role.MANAGER]} },
+  { path: 'payment', component: PaymentComponent, canActivate: [AuthGuard], data: {roles: [Role.RESIDENT, Role.MANAGER]} },
+  { path: 'residents', component: ResidentsComponent, canActivate: [AuthGuard], data: {roles: [Role.MANAGER]} },
+  { path: 'staff', component: StaffComponent, canActivate: [AuthGuard], data: {roles: [Role.MANAGER]} },
+  { path: 'university', component: UniversityComponent, canActivate: [AuthGuard], data: {roles: [Role.MANAGER]} },
+  { path: 'dormitory', component: DormitoryComponent, canActivate: [AuthGuard], data: {roles: [Role.MANAGER]} },
+  { path: 'room', component: RoomComponent, canActivate: [AuthGuard], data: {roles: [Role.MANAGER]} },
   { path: '', redirectTo: 'auth', pathMatch: "full" },
   { path: '**', redirectTo: 'auth' },
 ];

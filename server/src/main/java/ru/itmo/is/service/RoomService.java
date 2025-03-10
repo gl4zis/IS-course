@@ -6,22 +6,33 @@ import ru.itmo.is.dto.request.RoomRequest;
 import ru.itmo.is.dto.response.RoomResponse;
 import ru.itmo.is.entity.dorm.Dormitory;
 import ru.itmo.is.entity.dorm.Room;
+import ru.itmo.is.entity.user.Resident;
 import ru.itmo.is.exception.BadRequestException;
 import ru.itmo.is.exception.NotFoundException;
 import ru.itmo.is.repository.DormitoryRepository;
 import ru.itmo.is.repository.RoomRepository;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class RoomService {
+    private final UserService userService;
     private final RoomRepository roomRepository;
     private final DormitoryRepository dormitoryRepository;
 
     public List<RoomResponse> getAllRooms() {
         return roomRepository.findAllByOrderById().stream().map(RoomResponse::new).toList();
+    }
+
+    public List<RoomResponse> getForResident(String login) {
+        Resident resident = userService.getResidentByLogin(login);
+        return roomRepository.getAvailableInDormitory(resident.getRoom().getDormitory().getId()).stream()
+                .filter(r -> !Objects.equals(r.getId(), resident.getRoom().getId()))
+                .map(RoomResponse::new)
+                .toList();
     }
 
     public RoomResponse getRoom(int id) {

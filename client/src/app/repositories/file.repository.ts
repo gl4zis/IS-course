@@ -13,7 +13,7 @@ export class FileRepository {
     return `${this.api}/download/${key}`;
   }
 
-  createUploadLink(filename: string): string {
-    return `${this.api}/upload?filename=${filename}`;
+  uploadLink(): string {
+    return `${this.api}/upload`;
   }
 }

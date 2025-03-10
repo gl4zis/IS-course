@@ -18,7 +18,7 @@ public class DepartureValidator implements ConstraintValidator<ValidDeparture, D
         LocalDate to = departureRequest.getDayTo();
         LocalDate now = LocalDate.now();
 
-        if (from.isBefore(now) || to.isBefore(now) || from.isBefore(to)) {
+        if (from.isBefore(now) || to.isBefore(now)) {
             return false;
         }
 

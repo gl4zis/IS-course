@@ -15,7 +15,7 @@
           </ng-container>
         </div>
       </div>
-      <div *ngIf="manager">Обработчик &#64;{{ manager.login }}</div>
+      <div *ngIf="manager">Обработчик {{ manager.name }} {{ manager.surname }}</div>
       <div [style]="{ color: BID_STATUS_COLOR_MAP[status] }">
         <b>{{ status }}</b>
       </div>

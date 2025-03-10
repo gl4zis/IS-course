@@ -43,7 +43,16 @@ public class AuthInterceptor implements HandlerInterceptor {
         } else {
             securityContext.setAnonymous();
         }
-        return allowed(handler, securityContext.getRole());
+        if (allowed(handler, securityContext.getRole())) {
+            return true;
+        }
+
+        if (securityContext.isAnonymous()) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        } else {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        }
+        return false;
     }
 
     private boolean allowed(Object handler, @Nullable User.Role authenticatedRole) {

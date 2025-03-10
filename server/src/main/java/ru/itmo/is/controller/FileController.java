@@ -17,12 +17,12 @@ import ru.itmo.is.service.FileService;
 public class FileController {
     private final FileService fileService;
 
-    @PostMapping("/upload")
-    public OneFieldDto<String> upload(@RequestParam MultipartFile file) {
+    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public OneFieldDto<String> upload(@RequestParam("file") MultipartFile file) {
         return new OneFieldDto<>(fileService.upload(file));
     }
 
-    @PostMapping("/download/{filename}")
+    @GetMapping("/download/{filename}")
     public ResponseEntity<Resource> download(@PathVariable("filename") String filename) {
         FileResponse file = fileService.get(filename);
 

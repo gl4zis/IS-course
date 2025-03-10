@@ -21,6 +21,11 @@ public class RoomController {
         return roomService.getAllRooms();
     }
 
+    @GetMapping("/for-resident")
+    public List<RoomResponse> getForResident(@RequestParam("login") String resident) {
+        return roomService.getForResident(resident);
+    }
+
     @GetMapping("/{id}")
     public RoomResponse getRoom(@PathVariable("id") int id) {
         return roomService.getRoom(id);

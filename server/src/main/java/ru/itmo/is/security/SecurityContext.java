@@ -28,4 +28,8 @@ public class SecurityContext {
         this.username = null;
         this.role = null;
     }
+
+    public boolean isAnonymous() {
+        return this.username == null;
+    }
 }

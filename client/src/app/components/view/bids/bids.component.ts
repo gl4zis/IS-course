@@ -5,9 +5,14 @@ import {
   Bid,
   BID_STATUS_COLOR_MAP,
   BID_TYPE_MAP,
-  BidType, DepartureBid,
-  DepartureData, isEditableBidStatus,
-  OccupationBid, RoomChangeBid
+  BidStatus,
+  BidType,
+  DepartureBid,
+  DepartureData,
+  getBidTypeOptions,
+  isEditableBidStatus,
+  OccupationBid,
+  RoomChangeBid
 } from '../../../models/bid/bid.model';
 import {BidRepository} from '../../../repositories/bid.repository';
 import {Role} from '../../../models/auth/role.model';
@@ -23,12 +28,18 @@ import {Textarea} from 'primeng/textarea';
 import {PrimeTemplate} from 'primeng/api';
 import {University} from '../../../models/university/university.model';
 import {Dormitory} from '../../../models/dormitory/dormitory.model';
-import {localizeRoomType, Room, RoomType} from '../../../models/room/room.model';
+import {localizeRoomType, Room, ROOM_TYPE_OPTIONS, RoomType} from '../../../models/room/room.model';
 import {UniversityRepository} from '../../../repositories/university.repository';
 import {DormitoryRepository} from '../../../repositories/dormitory.repository';
 import {RoomRepository} from '../../../repositories/room.repository';
 import {FormsModule} from '@angular/forms';
 import {FileRepository} from '../../../repositories/file.repository';
+import {Calendar} from 'primeng/calendar';
+import {Select} from 'primeng/select';
+import {InputNumber} from 'primeng/inputnumber';
+import {FileUpload} from 'primeng/fileupload';
+import {BidRequest, DepartureRequest, OccupationRequest, RoomChangeRequest} from '../../../models/bid/bid.request';
+import {ToastService} from '../../../services/toast.service';
 
 interface OccupationDataView {
   university: University;
@@ -38,8 +49,13 @@ interface OccupationDataView {
 interface DepartureDataView extends DepartureData {}
 
 interface RoomChangeDataView {
-  roomTo?: Room;
+  roomTo: Room;
   roomPreferType?: RoomType;
+}
+
+interface RoomView {
+  id: number;
+  label: string;
 }
 
 @Component({
@@ -61,7 +77,11 @@ interface RoomChangeDataView {
     InputText,
     Textarea,
     PrimeTemplate,
-    FormsModule
+    FormsModule,
+    Calendar,
+    Select,
+    InputNumber,
+    FileUpload
   ]
 })
 export class BidsComponent implements OnInit {
@@ -73,13 +93,14 @@ export class BidsComponent implements OnInit {
   archivedBids: Bid[] = [];
 
   viewOpened = false;
+  isNewBid = false;
   viewBid?: Bid;
   occupationData?: OccupationDataView;
   departureData?: DepartureDataView;
   roomChangeData?: RoomChangeDataView;
   universityOptions: University[] = [];
   dormitoryOptions: Dormitory[] = [];
-  roomOptions: Room[] = [];
+  roomOptions: RoomView[] = [];
 
   comment = '';
   commentDialogOpened = false;
@@ -94,6 +115,7 @@ export class BidsComponent implements OnInit {
     private roomRepository: RoomRepository,
     private route: ActivatedRoute,
     private router: Router,
+    private toast: ToastService,
   ) {}
 
   ngOnInit(): void {
@@ -181,7 +203,7 @@ export class BidsComponent implements OnInit {
         } else if (this.viewBid.type === BidType.ROOM_CHANGE) {
           const rcBid = (this.viewBid as RoomChangeBid);
           this.roomChangeData = {
-            roomTo: undefined,
+            roomTo: {} as Room,
             roomPreferType: rcBid.roomPreferType
           };
 
@@ -205,7 +227,39 @@ export class BidsComponent implements OnInit {
 
   newBid() {
     this.viewOpened = true;
+    this.isNewBid = true;
+    const type = this.authService.getRole() === Role.NON_RESIDENT ? BidType.OCCUPATION : BidType.DEPARTURE;
+    this.viewBid = {
+      number: 0,
+      sender: undefined,
+      text: '',
+      type: type,
+      status: BidStatus.IN_PROCESS,
+      attachments: []
+    };
+    this.loadRoomOptions();
+    this.updateBidTypeForm();
     this.loadUniversityOptions();
+  }
+
+  updateBidTypeForm() {
+    this.occupationData = undefined;
+    this.departureData = undefined;
+    this.roomChangeData = undefined;
+    switch (this.viewBid?.type) {
+      case BidType.OCCUPATION:
+        this.occupationData = {
+          university: {} as University,
+          dormitory: {} as Dormitory,
+        };
+        break;
+      case BidType.DEPARTURE:
+        this.departureData = {} as DepartureDataView;
+        break;
+      case BidType.ROOM_CHANGE:
+        this.roomChangeData = {roomTo: {id: 0} as Room, roomPreferType: 0 as unknown as RoomType};
+        break;
+    }
   }
 
   loadUniversityOptions() {
@@ -221,11 +275,12 @@ export class BidsComponent implements OnInit {
   }
 
   loadRoomOptions() {
-    const resident = this.authService.getRole() === Role.RESIDENT ?
-      this.authService.getLogin() : this.viewBid?.sender.login;
+    const resident = this.authService.getLogin();
 
     this.roomRepository.getAvailableForResident(resident!).subscribe({
       next: (res) => this.roomOptions = res
+        .map(r => ({id: r.id, label: `${r.number}: ${r.floor} этаж, ${localizeRoomType(r.type)}`}))
+        .concat([{id: 0, label: '-'}])
     });
   }
 
@@ -240,6 +295,7 @@ export class BidsComponent implements OnInit {
   }
 
   resetForms() {
+    this.isNewBid = false;
     this.viewBid = undefined;
     this.occupationData = undefined;
     this.roomChangeData = undefined;
@@ -249,7 +305,10 @@ export class BidsComponent implements OnInit {
   }
 
   redirectToSender(): void {
-    if (!this.viewBid || this.viewBid.sender.role !== Role.RESIDENT) {
+    if (!this.viewBid || !this.viewBid.sender ||
+      this.viewBid.sender.role !== Role.RESIDENT ||
+      this.authService.getRole() !== Role.MANAGER
+    ) {
       return;
     }
     this.router.navigate(['residents'], { queryParams: { search: this.viewBid.sender.login } })
@@ -274,6 +333,10 @@ export class BidsComponent implements OnInit {
     this.isCommentForDeny = false;
   }
 
+  cancelComment() {
+    this.commentDialogOpened = false;
+  }
+
   saveComment() {
     if (this.isCommentForDeny) {
       this.bidRepository.deny(this.viewBid!.number, this.comment).subscribe({
@@ -294,9 +357,92 @@ export class BidsComponent implements OnInit {
     }
   }
 
+  isEditable(): boolean {
+    return this.isNewBid || (!!this.viewBid && !!this.viewBid.sender &&
+      this.viewBid.sender.login === this.authService.getLogin() &&
+      isEditableBidStatus(this.viewBid.status));
+  }
+
+  onFileUpload(event: any): void {
+    const downloadKey: string = event.originalEvent.body.data;
+    const filename: string = event.files[0].name;
+    this.viewBid?.attachments.push({ downloadKey: downloadKey, filename: filename });
+  }
+
+  uploadLink(): string {
+    return this.fileRepository.uploadLink();
+  }
+
+  removeFile(key: string): void {
+    this.viewBid!.attachments = this.viewBid?.attachments.filter(a => a.downloadKey !== key)!;
+  }
+
+  saveBid() {
+    if (!this.viewBid) return;
+    if (!this.isBidValid()) {
+      this.toast.warn('Некорректная форма');
+      return;
+    }
+
+    if (this.isNewBid) {
+      this.bidRepository.createBid(this.mapViewToRequest()!, this.viewBid.type).subscribe({
+        next: () => {
+          this.closeView();
+          this.loadSelfBids();
+        }
+      });
+    } else {
+      this.bidRepository.editBid(this.viewBid.number, this.mapViewToRequest()!, this.viewBid.type).subscribe({
+        next: () => {
+          this.closeView();
+          this.loadSelfBids();
+        }
+      });
+    }
+  }
+
+  private isBidValid(): boolean {
+    const oneDayMillis = 24 * 60 * 60 * 1000;
+    return !!this.viewBid && !!this.viewBid.text &&
+      (this.viewBid.type !== BidType.DEPARTURE || (
+        !!this.departureData &&
+        this.departureData.dayTo.getTime() - this.departureData.dayFrom.getTime() >= oneDayMillis &&
+        this.departureData.dayTo.getTime() - this.departureData.dayFrom.getTime() <= 30 * oneDayMillis
+      )) &&
+      (this.viewBid.type !== BidType.ROOM_CHANGE || (
+        !!this.roomChangeData && (!!this.roomChangeData.roomTo.id || !!this.roomChangeData.roomPreferType) &&
+        !(!!this.roomChangeData.roomTo.id && !!this.roomChangeData.roomPreferType)
+      )) &&
+      (this.viewBid.type !== BidType.OCCUPATION || (
+        !!this.occupationData && !!this.occupationData.university.id && !!this.occupationData.dormitory.id
+      ));
+  }
+
+  private mapViewToRequest(): BidRequest | OccupationRequest | DepartureRequest | RoomChangeRequest | undefined {
+    if (!this.viewBid) return undefined;
+    let request: BidRequest = {
+      text: this.viewBid.text,
+      attachmentKeys: this.viewBid.attachments.map(a => a.downloadKey)
+    };
+    switch (this.viewBid.type) {
+      case BidType.DEPARTURE:
+        return {...request, dayFrom: this.departureData?.dayFrom, dayTo: this.departureData?.dayTo};
+      case BidType.ROOM_CHANGE:
+        return {...request,
+          roomToId: !!this.roomChangeData?.roomTo.id ? this.roomChangeData.roomTo.id : undefined,
+          roomPreferType: !!this.roomChangeData?.roomPreferType ? this.roomChangeData.roomPreferType : undefined
+        };
+      case BidType.OCCUPATION:
+        return {...request,universityId: this.occupationData?.university.id, dormitoryId: this.occupationData?.dormitory.id};
+      case BidType.EVICTION:
+        return request;
+    }
+  }
+
   protected readonly Role = Role;
   protected readonly BID_TYPE_MAP = BID_TYPE_MAP;
   protected readonly BID_STATUS_COLOR_MAP = BID_STATUS_COLOR_MAP;
   protected readonly Utils = Utils;
-  protected readonly localizeRoomType = localizeRoomType;
+  protected readonly ROOM_TYPE_OPTIONS = ROOM_TYPE_OPTIONS;
+  protected readonly getBidTypeOptions = getBidTypeOptions;
 }

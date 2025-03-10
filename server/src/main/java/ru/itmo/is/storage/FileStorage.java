@@ -27,9 +27,10 @@ public class FileStorage {
             if (dir.toFile().exists()) {
                 dir.toFile().mkdirs();
             }
-            Path newFile = dir.resolve(file.getOriginalFilename());
+            String key = generateKey();
+            Path newFile = dir.resolve(key);
             file.transferTo(newFile);
-            return new FileRecord(file.getOriginalFilename(), generateKey());
+            return new FileRecord(file.getOriginalFilename(), key);
         } catch (IOException e) {
             throw new InternalServerErrorException("Error while file saving", e);
         }

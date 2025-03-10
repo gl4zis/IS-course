@@ -11,7 +11,11 @@ export enum RoomType {
   AISLE = 'AISLE'
 }
 
-export const ROOM_TYPE_OPTIONS = [{id: RoomType.AISLE, name: 'Коридорка'}, {id: RoomType.BLOCK, name: 'Блок'}];
+export const ROOM_TYPE_OPTIONS = [
+  {id: 0, name: '-'},
+  {id: RoomType.AISLE, name: 'Коридорка'},
+  {id: RoomType.BLOCK, name: 'Блок'}
+];
 
 export function localizeRoomType(type: RoomType): string {
   return ROOM_TYPE_OPTIONS.find(o => o.id === type)!.name;

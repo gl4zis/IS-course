@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {environment} from '../environment/environment';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
-import {Bid} from '../models/bid/bid.model';
+import {Bid, BidType, DepartureBid, OccupationBid, RoomChangeBid} from '../models/bid/bid.model';
 import {BidRequest, DepartureRequest, OccupationRequest, RoomChangeRequest} from '../models/bid/bid.request';
 
 @Injectable({
@@ -33,36 +33,62 @@ export class BidRepository {
     return this.http.get<Bid[]>(`${this.api}/archived`);
   }
 
-  createOccupation(req: OccupationRequest): Observable<void> {
-    return this.http.post<void>(`${this.api}/occupation`, req);
+  editBid(id: number, req: BidRequest, type: BidType): Observable<void> {
+    switch (type) {
+      case BidType.DEPARTURE:
+        return this.editDeparture(id, req as DepartureRequest);
+      case BidType.OCCUPATION:
+        return this.editOccupation(id, req as OccupationRequest);
+      case BidType.EVICTION:
+        return this.editEviction(id, req);
+      case BidType.ROOM_CHANGE:
+        return this.editRoomChange(id, req as RoomChangeRequest);
+    }
   }
 
-  editOccupation(id: number, req: OccupationRequest): Observable<void> {
-    return this.http.put<void>(`${this.api}/occupation/${id}`, req);
+  createBid(req: BidRequest, type: BidType): Observable<void> {
+    switch (type) {
+      case BidType.DEPARTURE:
+        return this.createDeparture(req as DepartureRequest);
+      case BidType.OCCUPATION:
+        return this.createOccupation(req as OccupationRequest);
+      case BidType.EVICTION:
+        return this.createEviction(req);
+      case BidType.ROOM_CHANGE:
+        return this.createRoomChange(req as RoomChangeRequest);
+    }
   }
 
-  createEviction(req: BidRequest): Observable<void> {
-    return this.http.post<void>(`${this.api}/eviction`, req);
-  }
-
-  editEviction(id: number, req: BidRequest): Observable<void> {
-    return this.http.put<void>(`${this.api}/eviction/${id}`, req);
-  }
-
-  createDeparture(req: DepartureRequest): Observable<void> {
-    return this.http.post<void>(`${this.api}/departure`, req);
-  }
-
-  editDeparture(id: number, req: DepartureRequest): Observable<void> {
+  private editDeparture(id: number, req: DepartureRequest): Observable<void> {
     return this.http.put<void>(`${this.api}/departure/${id}`, req);
   }
 
-  createRoomChange(req: RoomChangeRequest): Observable<void> {
-    return this.http.post<void>(`${this.api}/room-change`, req);
+  private editOccupation(id: number, req: OccupationRequest): Observable<void> {
+    return this.http.put<void>(`${this.api}/occupation/${id}`, req);
   }
 
-  editRoomChange(id: number, req: RoomChangeRequest): Observable<void> {
+  private editEviction(id: number, req: BidRequest): Observable<void> {
+    return this.http.put<void>(`${this.api}/eviction/${id}`, req);
+  }
+
+  private editRoomChange(id: number, req: RoomChangeRequest): Observable<void> {
     return this.http.put<void>(`${this.api}/room-change/${id}`, req);
+  }
+
+  private createOccupation(req: OccupationRequest): Observable<void> {
+    return this.http.post<void>(`${this.api}/occupation`, req);
+  }
+
+  private createEviction(req: BidRequest): Observable<void> {
+    return this.http.post<void>(`${this.api}/eviction`, req);
+  }
+
+  private createDeparture(req: DepartureRequest): Observable<void> {
+    return this.http.post<void>(`${this.api}/departure`, req);
+  }
+
+  private createRoomChange(req: RoomChangeRequest): Observable<void> {
+    return this.http.post<void>(`${this.api}/room-change`, req);
   }
 
   deny(id: number, comment: string): Observable<void> {

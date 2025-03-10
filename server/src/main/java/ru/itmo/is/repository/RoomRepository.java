@@ -17,4 +17,7 @@ public interface RoomRepository extends CrudRepository<Room, Integer> {
     Optional<Room> getByDormitoryIdAndNumber(int dormitoryId, int number);
 
     List<Room> findAllByOrderById();
+
+    @Query(value = "SELECT * FROM room r WHERE r.dormitory_id = :dormId AND NOT is_room_filled(r.id)", nativeQuery = true)
+    List<Room> getAvailableInDormitory(@Param("dormId") int dormId);
 }
