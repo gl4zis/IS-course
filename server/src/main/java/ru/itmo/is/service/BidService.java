@@ -87,11 +87,9 @@ public class BidService {
     }
 
     public void denyBid(Long id, String comment) {
-        Optional<Bid> bidO = bidRepository.findById(id);
-        if (bidO.isEmpty()) {
-            throw new BadRequestException("No such bid");
-        }
-        Bid bid = bidO.get();
+        Bid bid = bidRepository.findById(id)
+                .filter(b -> b.getStatus() == Bid.Status.IN_PROCESS)
+                .orElseThrow(() -> new BadRequestException("No such bid"));
         bid.setStatus(Bid.Status.DENIED);
         bid.setManager(userService.getCurrentUserOrThrow());
         bid.setComment(comment);
@@ -100,14 +98,9 @@ public class BidService {
 
     @Transactional
     public void acceptBid(Long id) {
-        Optional<Bid> bidO = bidRepository.findById(id);
-        if (bidO.isEmpty()) {
-            throw new BadRequestException("No such bid");
-        }
-        Bid bid = bidO.get();
-        if (bid.getStatus() != Bid.Status.IN_PROCESS) {
-            throw new BadRequestException("Bid was already processed");
-        }
+        Bid bid = bidRepository.findById(id)
+                .filter(b -> b.getStatus() == Bid.Status.IN_PROCESS)
+                .orElseThrow(() -> new BadRequestException("No such bid"));
 
         bid.setStatus(Bid.Status.ACCEPTED);
         bid.setManager(userService.getCurrentUserOrThrow());
@@ -121,14 +114,9 @@ public class BidService {
     }
 
     public void pendBid(long id, String comment) {
-        Optional<Bid> bidO = bidRepository.findById(id);
-        if (bidO.isEmpty()) {
-            throw new BadRequestException("No such bid");
-        }
-        Bid bid = bidO.get();
-        if (bid.getStatus() != Bid.Status.IN_PROCESS) {
-            throw new BadRequestException("Bid was already processed");
-        }
+        Bid bid = bidRepository.findById(id)
+                .filter(b -> b.getStatus() == Bid.Status.IN_PROCESS)
+                .orElseThrow(() -> new BadRequestException("No such bid"));
         bid.setComment(comment);
         bid.setManager(userService.getCurrentUserOrThrow());
         bid.setStatus(Bid.Status.PENDING_REVISION);
@@ -249,6 +237,21 @@ public class BidService {
         updateBidFiles(req.getAttachmentKeys(), bid);
     }
 
+    public void evictResident(String login) {
+        Resident nonResident = userService.getResidentByLogin(login);
+        bidRepository.getBySenderLoginAndStatusIn(login, List.of(Bid.Status.IN_PROCESS, Bid.Status.PENDING_REVISION))
+                .forEach(bid -> denyBid(bid.getId(), "Auto-denied by eviction"));
+
+        residentRepository.userIsNotResidentAnyMore(nonResident.getLogin());
+        nonResident.setRole(User.Role.NON_RESIDENT);
+        userRepository.save(nonResident);
+
+        var event = new Event();
+        event.setType(Event.Type.EVICTION);
+        event.setUsr(nonResident);
+        eventRepository.save(event);
+    }
+
     private void updateBidFiles(List<String> attachments, Bid bid) {
         if (bid.getFiles() != null) {
             bid.getFiles().forEach(bidFile -> {
@@ -322,7 +325,7 @@ public class BidService {
     }
 
     private void acceptEvictionBid(Bid bid) {
-        userService.evict(bid.getSender().getLogin());
+        evictResident(bid.getSender().getLogin());
     }
 
     private void acceptDepartureBid(DepartureBid bid) {

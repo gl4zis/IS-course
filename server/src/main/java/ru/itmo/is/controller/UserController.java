@@ -7,6 +7,7 @@ import ru.itmo.is.dto.response.user.ResidentResponse;
 import ru.itmo.is.dto.response.user.UserResponse;
 import ru.itmo.is.entity.user.User;
 import ru.itmo.is.security.RolesAllowed;
+import ru.itmo.is.service.BidService;
 import ru.itmo.is.service.UserService;
 
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    private final BidService bidService;
 
     @GetMapping("/staff")
     public List<UserResponse> getStaff() {
@@ -41,6 +43,6 @@ public class UserController {
 
     @PostMapping("/residents/evict")
     public void evict(@RequestParam("login") String login) {
-        userService.evict(login);
+        bidService.evictResident(login);
     }
 }

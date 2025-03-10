@@ -21,9 +21,10 @@ public class RoomController {
         return roomService.getAllRooms();
     }
 
+    @RolesAllowed({User.Role.RESIDENT})
     @GetMapping("/for-resident")
-    public List<RoomResponse> getForResident(@RequestParam("login") String resident) {
-        return roomService.getForResident(resident);
+    public List<RoomResponse> getForResident() {
+        return roomService.getForResident();
     }
 
     @GetMapping("/{id}")

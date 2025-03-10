@@ -27,8 +27,8 @@ public class RoomService {
         return roomRepository.findAllByOrderById().stream().map(RoomResponse::new).toList();
     }
 
-    public List<RoomResponse> getForResident(String login) {
-        Resident resident = userService.getResidentByLogin(login);
+    public List<RoomResponse> getForResident() {
+        Resident resident = userService.getCurrentResidentOrThrow();
         return roomRepository.getAvailableInDormitory(resident.getRoom().getDormitory().getId()).stream()
                 .filter(r -> !Objects.equals(r.getId(), resident.getRoom().getId()))
                 .map(RoomResponse::new)

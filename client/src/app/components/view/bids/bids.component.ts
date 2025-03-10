@@ -4,7 +4,9 @@ import {AuthService} from '../../../services/auth.service';
 import {
   Bid,
   BID_STATUS_COLOR_MAP,
-  BID_TYPE_MAP, BID_TYPE_NON_RESIDENT_OPTIONS, BID_TYPE_RESIDENT_OPTIONS,
+  BID_TYPE_MAP,
+  BID_TYPE_NON_RESIDENT_OPTIONS,
+  BID_TYPE_RESIDENT_OPTIONS,
   BidStatus,
   BidType,
   DepartureBid,
@@ -241,12 +243,11 @@ export class BidsComponent implements OnInit {
   newBid() {
     this.viewOpened = true;
     this.isNewBid = true;
-    const type = this.authService.getRole() === Role.NON_RESIDENT ? BidType.OCCUPATION : BidType.DEPARTURE;
     this.viewBid = {
       number: 0,
       sender: undefined,
       text: '',
-      type: type,
+      type: this.getBidTypeOptions()[0].id,
       status: BidStatus.IN_PROCESS,
       attachments: []
     };
@@ -290,9 +291,7 @@ export class BidsComponent implements OnInit {
   }
 
   loadRoomOptions() {
-    const resident = this.authService.getLogin();
-
-    this.roomRepository.getAvailableForResident(resident!).subscribe({
+     this.roomRepository.getAvailableForResident().subscribe({
       next: (res) => this.roomOptions = res
         .map(r => ({id: r.id, label: `${r.number}: ${r.floor} этаж, ${localizeRoomType(r.type)}`}))
         .concat([{id: 0, label: '-'}])

@@ -34,7 +34,11 @@ public class UserService {
     }
 
     public Resident getCurrentResidentOrThrow() {
-        return getResidentByLogin(getCurrentUserOrThrow().getLogin());
+        try {
+            return getResidentByLogin(getCurrentUserOrThrow().getLogin());
+        } catch (NotFoundException e) {
+            throw new ForbiddenException("You are not resident");
+        }
     }
 
     public User getCurrentUserOrThrow() {
@@ -109,18 +113,6 @@ public class UserService {
         toEvictionByRules.forEach(u -> response.add(EvictionResponse.ruleViolation(u)));
 
         return response;
-    }
-
-    public void evict(String login) {
-        Resident nonResident = getResidentByLogin(login);
-        residentRepository.userIsNotResidentAnyMore(nonResident.getLogin());
-        nonResident.setRole(User.Role.NON_RESIDENT);
-        userRepository.save(nonResident);
-
-        var event = new Event();
-        event.setType(Event.Type.EVICTION);
-        event.setUsr(nonResident);
-        eventRepository.save(event);
     }
 
     private record UserOptionalEvent(User user, Optional<Event> event) {}
