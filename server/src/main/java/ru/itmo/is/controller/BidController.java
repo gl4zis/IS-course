@@ -9,6 +9,7 @@ import ru.itmo.is.dto.request.bid.DepartureRequest;
 import ru.itmo.is.dto.request.bid.OccupationRequest;
 import ru.itmo.is.dto.request.bid.RoomChangeRequest;
 import ru.itmo.is.dto.response.bid.BidResponse;
+import ru.itmo.is.entity.bid.Bid;
 import ru.itmo.is.entity.user.User;
 import ru.itmo.is.security.RolesAllowed;
 import ru.itmo.is.service.BidService;
@@ -20,6 +21,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BidController {
     private final BidService bidService;
+
+    @RolesAllowed({User.Role.NON_RESIDENT, User.Role.RESIDENT})
+    @GetMapping("/my/opened-types")
+    public List<Bid.Type> getSelfOpenedBidTypes() {
+        return bidService.getSelfOpenedBidTypes();
+    }
 
     @RolesAllowed({User.Role.NON_RESIDENT, User.Role.RESIDENT})
     @GetMapping("/my")

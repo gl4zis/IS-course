@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {environment} from '../environment/environment';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
-import {Bid, BidType, DepartureBid, OccupationBid, RoomChangeBid} from '../models/bid/bid.model';
+import {Bid, BidType} from '../models/bid/bid.model';
 import {BidRequest, DepartureRequest, OccupationRequest, RoomChangeRequest} from '../models/bid/bid.request';
 
 @Injectable({
@@ -101,5 +101,9 @@ export class BidRepository {
 
   pend(id: number, comment: string): Observable<void> {
     return this.http.post<void>(`${this.api}/${id}/pend`, { data: comment });
+  }
+
+  getSelfOpenedBidTypes(): Observable<BidType[]> {
+    return this.http.get<BidType[]>(`${this.api}/my/opened-types`);
   }
 }

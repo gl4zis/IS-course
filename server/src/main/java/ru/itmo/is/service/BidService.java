@@ -45,6 +45,10 @@ public class BidService {
     private final UserRepository userRepository;
     private final BidComparator bidComparator;
 
+    public List<Bid.Type> getSelfOpenedBidTypes() {
+        return bidRepository.getOpenedBidTypes(userService.getCurrentUserOrThrow().getLogin());
+    }
+
     public List<BidResponse> getInProcessBids() {
         List<Bid> bids = bidRepository.getByStatusIn(List.of(Bid.Status.IN_PROCESS));
         return bids.stream()
@@ -139,7 +143,9 @@ public class BidService {
 
     public void saveOccupationBid(@Nullable Long bidId, OccupationRequest req) {
         var bid = new OccupationBid();
-        if (bidId != null) {
+        if (bidId == null) {
+            checkUserBidIsNotExists(Bid.Type.OCCUPATION);
+        } else {
             checkEditableBid(bidId, Bid.Type.OCCUPATION);
             bid = bidRepository.findById(bidId)
                     .filter(occBid -> occBid.getType() == Bid.Type.OCCUPATION)
@@ -170,7 +176,9 @@ public class BidService {
 
     public void saveEvictionBid(@Nullable Long bidId, BidRequest req) {
         var bid = new Bid();
-        if (bidId != null) {
+        if (bidId == null) {
+            checkUserBidIsNotExists(Bid.Type.EVICTION);
+        } else {
             checkEditableBid(bidId, Bid.Type.EVICTION);
             bid = bidRepository.findById(bidId)
                     .filter(occBid -> occBid.getType() == Bid.Type.EVICTION)
@@ -189,7 +197,9 @@ public class BidService {
 
     public void saveDepartureBid(@Nullable Long bidId, DepartureRequest req) {
         var bid = new DepartureBid();
-        if (bidId != null) {
+        if (bidId == null) {
+            checkUserBidIsNotExists(Bid.Type.DEPARTURE);
+        } else {
             checkEditableBid(bidId, Bid.Type.DEPARTURE);
             bid = bidRepository.findById(bidId)
                     .filter(occBid -> occBid.getType() == Bid.Type.DEPARTURE)
@@ -210,7 +220,9 @@ public class BidService {
 
     public void saveRoomChangeBid(@Nullable Long bidId, RoomChangeRequest req) {
         var bid = new RoomChangeBid();
-        if (bidId != null) {
+        if (bidId == null) {
+            checkUserBidIsNotExists(Bid.Type.ROOM_CHANGE);
+        } else {
             checkEditableBid(bidId, Bid.Type.ROOM_CHANGE);
             bid = bidRepository.findById(bidId)
                     .filter(occBid -> occBid.getType() == Bid.Type.ROOM_CHANGE)
@@ -248,6 +260,16 @@ public class BidService {
             bidFile.setBid(bid);
             bidFileRepository.save(bidFile);
         });
+    }
+
+    private void checkUserBidIsNotExists(Bid.Type type) {
+        if (bidRepository.existsBySenderLoginAndTypeAndStatusIn(
+                userService.getCurrentUserOrThrow().getLogin(),
+                type,
+                List.of(Bid.Status.IN_PROCESS, Bid.Status.PENDING_REVISION)
+        )) {
+            throw new BadRequestException("Not closed bid with this status already exists");
+        }
     }
 
     private void checkEditableBid(long id, Bid.Type type) {

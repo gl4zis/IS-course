@@ -1,5 +1,5 @@
 <nav-header/>
-<p-button class="center" *ngIf="authService.getRole() !== Role.MANAGER"
+<p-button class="center" *ngIf="authService.getRole() !== Role.MANAGER && getBidTypeOptions().length"
           [style]="{margin: '30px'}" (click)="newBid()"
 >New</p-button>
 
@@ -80,7 +80,7 @@
     <div class="input-row" *ngIf="isNewBid">
       <div class="input">
         <p-select [style]="{width: '45%'}"
-          [options]="getBidTypeOptions(authService.getRole())"
+          [options]="getBidTypeOptions()"
           optionLabel="name" optionValue="id"
           [(ngModel)]="viewBid.type"
           (ngModelChange)="updateBidTypeForm()"

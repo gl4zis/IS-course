@@ -71,23 +71,12 @@ export const BID_TYPE_MAP = {
   [BidType.ROOM_CHANGE]: 'смену комнаты'
 };
 
-const BID_TYPE_RESIDENT_OPTIONS = [
+export const BID_TYPE_RESIDENT_OPTIONS = [
   { id: BidType.EVICTION, name: 'Выселение' },
   { id: BidType.DEPARTURE, name: 'Временный отъезд' },
   { id: BidType.ROOM_CHANGE, name: 'Смена комнаты' }
 ];
 
-const BID_TYPE_NON_RESIDENT_OPTIONS = [
+export const BID_TYPE_NON_RESIDENT_OPTIONS = [
   { id: BidType.OCCUPATION, name: 'Заселение' }
 ];
-
-export function getBidTypeOptions(userRole?: Role) {
-  switch (userRole) {
-    case Role.NON_RESIDENT:
-      return BID_TYPE_NON_RESIDENT_OPTIONS;
-    case Role.RESIDENT:
-      return BID_TYPE_RESIDENT_OPTIONS;
-    default:
-      return [];
-  }
-}

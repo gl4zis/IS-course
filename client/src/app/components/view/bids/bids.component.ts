@@ -4,12 +4,11 @@ import {AuthService} from '../../../services/auth.service';
 import {
   Bid,
   BID_STATUS_COLOR_MAP,
-  BID_TYPE_MAP,
+  BID_TYPE_MAP, BID_TYPE_NON_RESIDENT_OPTIONS, BID_TYPE_RESIDENT_OPTIONS,
   BidStatus,
   BidType,
   DepartureBid,
   DepartureData,
-  getBidTypeOptions,
   isEditableBidStatus,
   OccupationBid,
   RoomChangeBid
@@ -87,6 +86,8 @@ interface RoomView {
 export class BidsComponent implements OnInit {
   selfBids: Bid[] = [];
 
+  openedTypes: BidType[] = [];
+
   currTabIndex = 0;
   inProcessBids: Bid[] = [];
   pendingBids: Bid[] = [];
@@ -128,12 +129,19 @@ export class BidsComponent implements OnInit {
       this.loadInProcessBids();
     } else {
       this.loadSelfBids();
+      this.loadOpenedTypes();
     }
   }
 
   loadSelfBids(): void {
     this.bidRepository.getSelf().subscribe({
       next: (res) => this.selfBids = res
+    });
+  }
+
+  loadOpenedTypes(): void {
+    this.bidRepository.getSelfOpenedBidTypes().subscribe({
+      next: (res) => this.openedTypes = res
     });
   }
 
@@ -396,6 +404,7 @@ export class BidsComponent implements OnInit {
         next: () => {
           this.closeView();
           this.loadSelfBids();
+          this.loadOpenedTypes();
         }
       });
     } else {
@@ -403,8 +412,20 @@ export class BidsComponent implements OnInit {
         next: () => {
           this.closeView();
           this.loadSelfBids();
+          this.loadOpenedTypes();
         }
       });
+    }
+  }
+
+  getBidTypeOptions() {
+    switch (this.authService.getRole()) {
+      case Role.NON_RESIDENT:
+        return BID_TYPE_NON_RESIDENT_OPTIONS.filter(o => !this.openedTypes.includes(o.id));
+      case Role.RESIDENT:
+        return BID_TYPE_RESIDENT_OPTIONS.filter(o => !this.openedTypes.includes(o.id));
+      default:
+        return [];
     }
   }
 
@@ -451,5 +472,4 @@ export class BidsComponent implements OnInit {
   protected readonly BID_STATUS_COLOR_MAP = BID_STATUS_COLOR_MAP;
   protected readonly Utils = Utils;
   protected readonly ROOM_TYPE_OPTIONS = ROOM_TYPE_OPTIONS;
-  protected readonly getBidTypeOptions = getBidTypeOptions;
 }
