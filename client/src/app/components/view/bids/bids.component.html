@@ -187,7 +187,7 @@
     </div>
 
     <div class="flex input-row" style="flex-direction: column">
-      <h5 class="center">Приложения</h5>
+      <h6 class="center">Приложения</h6>
       <div class="center" *ngIf="isEditable()">
         <p-fileupload
           name="file"
@@ -210,6 +210,14 @@
           >Remove</p-button>
         </li>
       </ul>
+    </div>
+
+    <div class="input-row" *ngIf="viewBid.comment">
+      <h6 class="center">Комментарий от обработчика заявки</h6>
+      <textarea pTextarea style="width: 100%; height: 100px; resize: none"
+                readonly
+                [(ngModel)]="viewBid.comment"
+      ></textarea>
     </div>
 
     <div class="form-buttons" *ngIf="authService.getRole() === Role.MANAGER">

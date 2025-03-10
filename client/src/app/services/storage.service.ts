@@ -8,11 +8,11 @@ export class StorageService {
   private readonly TOKEN_KEY = 'jwt';
 
   resetAuth(): void {
-    localStorage.removeItem(this.TOKEN_KEY);
+    sessionStorage.removeItem(this.TOKEN_KEY);
   }
 
   saveToken(token: string): void {
-    localStorage.setItem(this.TOKEN_KEY, token);
+    sessionStorage.setItem(this.TOKEN_KEY, token);
   }
 
   getToken(): string | undefined {
@@ -20,7 +20,7 @@ export class StorageService {
   }
 
   private getItem(name: string): string | undefined {
-    const item = localStorage.getItem(name);
+    const item = sessionStorage.getItem(name);
     return item ? item : undefined;
   }
 }
