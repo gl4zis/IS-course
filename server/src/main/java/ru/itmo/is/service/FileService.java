@@ -27,8 +27,8 @@ public class FileService {
         return record.getKey();
     }
 
-    public FileResponse get(String filename) {
-        return bidFileRepository.findById(filename)
+    public FileResponse get(String key) {
+        return bidFileRepository.findById(key)
                 .map(FileRecord::new)
                 .map(fileStorage::get)
                 .orElseThrow(() -> new NotFoundException("No file with such key"));

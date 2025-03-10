@@ -20,3 +20,4 @@ spring:
 file:
   storage:
     dir: /Users/makeev/dorm-storage
+#/home/studs/s367370/dorm-storage

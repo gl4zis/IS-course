@@ -119,7 +119,8 @@
             [style]="{width: '100%'}"
             [options]="universityOptions"
             optionValue="id" optionLabel="name"
-            [(ngModel)]="occupationData.university"
+            [(ngModel)]="occupationData.university.id"
+            (ngModelChange)="loadDormOptions($event)"
             [readonly]="!isEditable()"
           />
         </div>
@@ -130,7 +131,7 @@
             [style]="{width: '100%'}"
             [options]="dormitoryOptions"
             optionValue="id" optionLabel="address"
-            [(ngModel)]="occupationData.dormitory"
+            [(ngModel)]="occupationData.dormitory.id"
             [readonly]="!isEditable()"
           />
         </div>
@@ -163,7 +164,7 @@
 
       <ng-container *ngIf="roomChangeData">
         <div class="input" style="margin-right: 20px">
-          <label for="roomNumber">Номер комнаты</label>
+          <label for="roomNumber">Комната</label>
           <p-select id="roomNumber"
                     [style]="{width: '100%'}"
                     [(ngModel)]="roomChangeData.roomTo.id"

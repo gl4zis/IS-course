@@ -181,14 +181,17 @@ export class BidsComponent implements OnInit {
           const occBid = (this.viewBid as OccupationBid);
           this.occupationData = {
             university: {} as University,
-            dormitory: {} as Dormitory,
+            dormitory: {} as Dormitory
           };
 
           this.universityRepository.get(occBid.universityId).subscribe({
-            next: (university) => this.occupationData!.university = university,
+            next: (university) => this.occupationData!.university = university
           });
           this.dormitoryRepository.get(occBid.dormitoryId).subscribe({
-            next: (dormitory) => this.occupationData!.dormitory = dormitory,
+            next: (dormitory) => {
+              this.occupationData!.dormitory = dormitory;
+              this.dormitoryOptions = [dormitory];
+            }
           });
 
           if (toEdit && isEditableBidStatus(this.viewBid.status)) {
@@ -204,12 +207,15 @@ export class BidsComponent implements OnInit {
           const rcBid = (this.viewBid as RoomChangeBid);
           this.roomChangeData = {
             roomTo: {} as Room,
-            roomPreferType: rcBid.roomPreferType
+            roomPreferType: rcBid.roomPreferType ? rcBid.roomPreferType : 0 as unknown as RoomType
           };
 
           if (rcBid.roomToId) {
             this.roomRepository.get(rcBid.roomToId).subscribe({
-              next: (room) => this.roomChangeData!.roomTo = room
+              next: (room) => {
+                this.roomChangeData!.roomTo = room;
+                this.roomOptions = [{id: room.id, label: `${room.number}: ${room.floor} этаж, ${localizeRoomType(room.type)}`}];
+              }
             });
           }
 
@@ -221,7 +227,6 @@ export class BidsComponent implements OnInit {
         this.viewOpened = true;
       }
     });
-
     this.loadUniversityOptions();
   }
 
@@ -237,7 +242,9 @@ export class BidsComponent implements OnInit {
       status: BidStatus.IN_PROCESS,
       attachments: []
     };
-    this.loadRoomOptions();
+    if (this.authService.getRole() === Role.RESIDENT) {
+      this.loadRoomOptions();
+    }
     this.updateBidTypeForm();
     this.loadUniversityOptions();
   }

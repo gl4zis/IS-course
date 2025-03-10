@@ -238,10 +238,12 @@ public class BidService {
     }
 
     private void updateBidFiles(List<String> attachments, Bid bid) {
-        bid.getFiles().forEach(bidFile -> {
-            bidFile.setBid(null);
-            bidFileRepository.save(bidFile);
-        });
+        if (bid.getFiles() != null) {
+            bid.getFiles().forEach(bidFile -> {
+                bidFile.setBid(null);
+                bidFileRepository.save(bidFile);
+            });
+        }
         bidFileRepository.getByKeyIn(attachments).forEach(bidFile -> {
             bidFile.setBid(bid);
             bidFileRepository.save(bidFile);
@@ -343,10 +345,10 @@ public class BidService {
     }
 
     private BidResponse mapBid(Bid bid) {
-        return switch (bid) {
-            case DepartureBid db -> new DepartureBidResponse(db);
-            case OccupationBid ob -> new OccupationBidResponse(ob);
-            case RoomChangeBid rcb -> new RoomChangeResponse(rcb);
+        return switch (bid.getType()) {
+            case DEPARTURE -> new DepartureBidResponse((DepartureBid) bid);
+            case OCCUPATION -> new OccupationBidResponse((OccupationBid) bid);
+            case ROOM_CHANGE -> new RoomChangeResponse((RoomChangeBid) bid);
             default -> new BidResponse(bid);
         };
     }

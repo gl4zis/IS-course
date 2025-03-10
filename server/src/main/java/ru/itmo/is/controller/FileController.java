@@ -22,9 +22,9 @@ public class FileController {
         return new OneFieldDto<>(fileService.upload(file));
     }
 
-    @GetMapping("/download/{filename}")
-    public ResponseEntity<Resource> download(@PathVariable("filename") String filename) {
-        FileResponse file = fileService.get(filename);
+    @GetMapping("/download/{key}")
+    public ResponseEntity<Resource> download(@PathVariable("key") String key) {
+        FileResponse file = fileService.get(key);
 
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)

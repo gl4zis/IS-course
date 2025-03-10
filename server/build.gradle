@@ -1,9 +1,16 @@
 plugins {
+    id("org.springframework.boot") version "3.4.1"
     id 'java'
 }
 
 group = 'ru.itmo.is'
 version = '1.0'
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
+}
 
 repositories {
     mavenCentral()
