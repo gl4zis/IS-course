@@ -9,6 +9,7 @@ import ru.itmo.is.exception.BadRequestException;
 import ru.itmo.is.repository.EventRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -17,17 +18,19 @@ public class GuardService {
     private final UserService userService;
 
     public void entry(String login) {
-        eventRepository.getLastInOutEvent(login)
-                .filter(event -> event.getType().equals(Event.Type.OUT))
-                .orElseThrow(() -> new BadRequestException("Last guard event was the same"));
+        Optional<Event> lastInOutEventO = eventRepository.getLastInOutEvent(login);
+        if (lastInOutEventO.isPresent() && lastInOutEventO.get().getType().equals(Event.Type.IN)) {
+            throw new BadRequestException("Last guard event was the same");
+        }
 
         createGuardEvent(login, Event.Type.IN);
     }
 
     public void exit(String login) {
-        eventRepository.getLastInOutEvent(login)
-                .filter(event -> event.getType().equals(Event.Type.IN))
-                .orElseThrow(() -> new BadRequestException("Last guard event was the same"));
+        Optional<Event> lastInOutEventO = eventRepository.getLastInOutEvent(login);
+        if (lastInOutEventO.isPresent() && lastInOutEventO.get().getType().equals(Event.Type.OUT)) {
+            throw new BadRequestException("Last guard event was the same");
+        }
 
         createGuardEvent(login, Event.Type.OUT);
     }

@@ -53,7 +53,7 @@ export class InoutComponent implements OnInit {
           this.searchResident = "";
         }
       });
-    } else {
+    } else if (this.authService.getRole() === Role.RESIDENT) {
       this.loadSelfHistory();
     }
   }
